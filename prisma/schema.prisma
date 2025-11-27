@@ -11,6 +11,7 @@ model Users {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   email     String   @unique
+  password  String
   name      String?
   thumbnail String?
 }
