@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
+import { PrismaService } from "src/prisma/prisma.service";
 
 // 1. 프론트에서 로그인 버튼을 누름
 // 2. "/auth/ligin"경로로 요청이 들어옴
@@ -16,13 +17,17 @@ interface LoginDto {
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly prisma: PrismaService
+  ) {}
 
   @Post("login")
   @ApiOperation({
     summary: "로그인 API",
   })
   login(@Body() payload: LoginDto) {
+    this.prisma.users;
     return this.authService.login(payload);
   }
 }
