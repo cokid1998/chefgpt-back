@@ -15,6 +15,11 @@ interface LoginDto {
   password: string;
 }
 
+interface SignupDto {
+  email: string;
+  password: string;
+}
+
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -27,7 +32,14 @@ export class AuthController {
     summary: "로그인 API",
   })
   login(@Body() payload: LoginDto) {
-    this.prisma.users;
     return this.authService.login(payload);
+  }
+
+  @Post("signup")
+  @ApiOperation({
+    summary: "회원가입",
+  })
+  signup(@Body() payload: SignupDto) {
+    return this.authService.signup(payload);
   }
 }
