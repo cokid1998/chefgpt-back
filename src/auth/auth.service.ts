@@ -1,16 +1,8 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
-
-interface LoginDto {
-  email: string;
-  password: string;
-}
-
-interface SignupDto {
-  email: string;
-  password: string;
-}
+import { SignupDto } from "src/auth/dto/signup.dto";
+import { LoginDto } from "src/auth/dto/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -20,9 +12,26 @@ export class AuthService {
   ) {}
 
   async login(payload: LoginDto) {
-    const data = { sub: 1, email: payload.email };
+    // DB에 접근해서 이메일 탐색 후 있는 회원인지 탐색
+    const existingUser = await this.prisma.users.findUnique({
+      where: {
+        email: payload.email,
+      },
+    });
+    // 없으면 에러 반환
+    if (!existingUser) {
+      throw new BadRequestException("존재하지 않는 회원입니다.");
+    }
+    const tokenMeta = { sub: existingUser.id, email: payload.email };
+    const accessToken = await this.jwtService.signAsync(tokenMeta);
+    const refreshToken = await this.jwtService.signAsync(tokenMeta, {
+      expiresIn: "7d",
+    });
+
     return {
-      access_token: await this.jwtService.signAsync(data),
+      user: existingUser,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -46,6 +55,14 @@ export class AuthService {
       },
     });
 
-    return newUser; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
+    const tokenMeta = { sub: newUser.id, email: payload.email };
+
+    const accessToken = await this.jwtService.signAsync(tokenMeta);
+
+    const refreshToken = await this.jwtService.signAsync(tokenMeta, {
+      expiresIn: "7d",
+    });
+
+    return { user: newUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
   }
 }

@@ -1,7 +1,16 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Post,
+  UsePipes,
+  ValidationPipe,
+  Res,
+} from "@nestjs/common";
+import { Response } from "express";
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
-import { PrismaService } from "src/prisma/prisma.service";
+import { SignupDto } from "src/auth/dto/signup.dto";
+import { LoginDto } from "src/auth/dto/login.dto";
 
 // 1. 프론트에서 로그인 버튼을 누름
 // 2. "/auth/ligin"경로로 요청이 들어옴
@@ -10,36 +19,45 @@ import { PrismaService } from "src/prisma/prisma.service";
 // 5. 백엔드 Guards가 JWT검증 (아직 구현 X)
 // 6. 권한 인증 후 Controller실행 (아직 구현 X)
 
-interface LoginDto {
-  email: string;
-  password: string;
-}
-
-interface SignupDto {
-  email: string;
-  password: string;
-}
-
 @Controller("auth")
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly prisma: PrismaService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post("login")
+  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: "로그인 API",
   })
-  login(@Body() payload: LoginDto) {
-    return this.authService.login(payload);
+  async login(@Body() payload: LoginDto, @Res() res: Response) {
+    const { user, accessToken, refreshToken } =
+      await this.authService.login(payload);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // 개발환경: false, 배포: true
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ user, accessToken });
   }
 
   @Post("signup")
+  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: "회원가입",
   })
-  signup(@Body() payload: SignupDto) {
-    return this.authService.signup(payload);
+  async signup(@Body() payload: SignupDto, @Res() res: Response) {
+    const { user, accessToken, refreshToken } =
+      await this.authService.signup(payload);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // 개발환경: false, 배포: true
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ user, accessToken });
   }
 }

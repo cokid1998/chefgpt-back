@@ -9,11 +9,9 @@
     "dev": "nest start --watch",
     "start": "nest start",
     "build": "nest build",
-
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:reset": "prisma migrate reset",
-    
     "db:start": "docker-compose up -d && sleep 5 && npm run prisma:migrate -- --name init",
     "db:reset": "docker-compose down && docker-compose up -d && sleep 5 && npm run prisma:migrate -- --name init",
     "db:seed": "prisma db seed"
@@ -27,6 +25,8 @@
     "@nestjs/swagger": "^11.2.3",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
