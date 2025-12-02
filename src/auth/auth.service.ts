@@ -28,8 +28,10 @@ export class AuthService {
       expiresIn: "7d",
     });
 
+    const { password, ...removePasswordUser } = existingUser;
+
     return {
-      user: existingUser,
+      user: removePasswordUser,
       accessToken,
       refreshToken,
     };
@@ -56,13 +58,12 @@ export class AuthService {
     });
 
     const tokenMeta = { sub: newUser.id, email: payload.email };
-
     const accessToken = await this.jwtService.signAsync(tokenMeta);
-
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
       expiresIn: "7d",
     });
+    const { password, ...removePasswordUser } = existingUser;
 
-    return { user: newUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
+    return { user: removePasswordUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
   }
 }
