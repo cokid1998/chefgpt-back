@@ -13,7 +13,7 @@ export class AuthService {
 
   async login(payload: LoginDto) {
     // DB에 접근해서 이메일 탐색 후 있는 회원인지 탐색
-    const existingUser = await this.prisma.users.findUnique({
+    const existingUser = await this.prisma.user.findUnique({
       where: {
         email: payload.email,
       },
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async signup(payload: SignupDto) {
-    const existingUser = await this.prisma.users.findUnique({
+    const existingUser = await this.prisma.user.findUnique({
       where: {
         email: payload.email,
       },
@@ -46,7 +46,7 @@ export class AuthService {
       throw new BadRequestException("이미 가입된 이메일 입니다.");
     }
     // db에 추가
-    const newUser = await this.prisma.users.create({
+    const newUser = await this.prisma.user.create({
       data: {
         email: payload.email,
         name: "test", // Todo: 랜덤닉네임
