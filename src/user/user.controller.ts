@@ -2,7 +2,7 @@ import { Controller, Get, Param } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { UserService } from "src/user/user.service";
 
-@Controller("user")
+@Controller("profile")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

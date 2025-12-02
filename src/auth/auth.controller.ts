@@ -29,7 +29,7 @@ export class AuthController {
     summary: "로그인 API",
   })
   async login(@Body() payload: LoginDto, @Res() res: Response) {
-    const { user, accessToken, refreshToken } =
+    const { profile, accessToken, refreshToken } =
       await this.authService.login(payload);
 
     res.cookie("refreshToken", refreshToken, {
@@ -39,7 +39,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ user, accessToken });
+    res.json({ profile, accessToken });
   }
 
   @Post("signup")
@@ -48,7 +48,7 @@ export class AuthController {
     summary: "회원가입",
   })
   async signup(@Body() payload: SignupDto, @Res() res: Response) {
-    const { user, accessToken, refreshToken } =
+    const { profile, accessToken, refreshToken } =
       await this.authService.signup(payload);
 
     res.cookie("refreshToken", refreshToken, {
@@ -58,6 +58,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ user, accessToken });
+    res.json({ profile, accessToken });
+  }
   }
 }
