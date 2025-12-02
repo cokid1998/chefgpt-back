@@ -60,5 +60,20 @@ export class AuthController {
 
     res.json({ profile, accessToken });
   }
+
+  @Post("/logout")
+  @ApiOperation({
+    summary: "로그아웃",
+  })
+  logOut(@Res() res: Response) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false, // 개발환경: false, 배포: true
+      sameSite: "lax",
+      path: "/",
+    });
+    console.log("Asdf");
+
+    return res.json({ success: true });
   }
 }
