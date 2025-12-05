@@ -14,7 +14,7 @@ async function main() {
     data: {
       email: "test@naver.com",
       password: "1234",
-      name: "이태관",
+      nickname: "이태관",
       thumbnail: "",
     },
   });

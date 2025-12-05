@@ -19,7 +19,7 @@ model User {
   createdAt DateTime @default(now())
   email     String   @unique
   password  String
-  name      String? // Todo: nickname으로 변경 필요
+  nickname  String?
   thumbnail String?
 
   // User와 Food의 관계

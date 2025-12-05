@@ -51,7 +51,7 @@ export class AuthService {
     const newUser = await this.prisma.user.create({
       data: {
         email: payload.email,
-        name: "test", // Todo: 랜덤닉네임
+        nickname: "test", // Todo: 랜덤닉네임
         thumbnail: "",
         password: payload.password, // Todo: 암호화
       },
