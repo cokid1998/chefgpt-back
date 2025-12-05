@@ -9,7 +9,10 @@
 * 🟢 You can import this file directly.
 */
 
+export const Food_Location = {
+  COLD: 'COLD',
+  FROZEN: 'FROZEN',
+  ROOM_TEMP: 'ROOM_TEMP'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type Food_Location = (typeof Food_Location)[keyof typeof Food_Location]

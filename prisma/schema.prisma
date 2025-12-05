@@ -7,11 +7,49 @@ datasource db {
   provider = "postgresql"
 }
 
+// 음식 보관 위치 Enum
+enum Food_Location {
+  COLD
+  FROZEN
+  ROOM_TEMP
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   email     String   @unique
   password  String
-  name      String?
+  name      String? // Todo: nickname으로 변경 필요
   thumbnail String?
+
+  // User와 Food의 관계
+  foods Food[]
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  // Category와 Food의 관계
+  foods Food[]
+}
+
+model Food {
+  id              Int           @id @default(autoincrement())
+  name            String
+  location        Food_Location
+  quantity        Int
+  unit            String
+  expiration_date DateTime
+  memo            String
+
+  // 외부키
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+
+  @@index([userId])
+  @@index([categoryId])
 }
