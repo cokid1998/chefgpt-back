@@ -6,6 +6,14 @@ import { FoodService } from "src/food/food.service";
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
 
+  @Get("category")
+  @ApiOperation({
+    summary: "음식 카테고리",
+  })
+  findCategory() {
+    return this.foodService.findCategory();
+  }
+
   @Get(":id")
   @ApiOperation({
     summary: "유저가 저장한 음식들",
