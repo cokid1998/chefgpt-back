@@ -40,7 +40,7 @@ model Food {
   location        Food_Location
   quantity        Int
   unit            String
-  expiration_date DateTime
+  expiration_date DateTime      @db.Timestamptz()
   memo            String
 
   // 외부키

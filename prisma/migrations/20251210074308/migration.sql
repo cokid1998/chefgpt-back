@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Food" ALTER COLUMN "expiration_date" SET DATA TYPE TIMESTAMPTZ;
