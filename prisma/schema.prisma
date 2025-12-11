@@ -35,20 +35,20 @@ model Category {
 }
 
 model Food {
-  id              Int           @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   name            String
-  location        Food_Location
-  quantity        Int
-  unit            String
-  expiration_date DateTime      @db.Timestamptz()
-  memo            String
+  location        Food_Location?
+  quantity        Int?
+  unit            String?
+  expiration_date DateTime?      @db.Timestamptz()
+  memo            String?
 
   // 외부키
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId Int?
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
 
   @@index([userId])
   @@index([categoryId])
