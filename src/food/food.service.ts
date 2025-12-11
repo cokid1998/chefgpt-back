@@ -25,6 +25,9 @@ export class FoodService {
         // userId: false
         // categoryId: true,
       },
+      orderBy: {
+        expiration_date: "asc",
+      },
     });
     return foods;
   }
