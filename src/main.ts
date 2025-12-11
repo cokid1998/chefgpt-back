@@ -7,9 +7,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     // 문서 페이지의 제목
-    .setTitle("test")
+    .setTitle("ChefGPT")
     // 문서에 대한 간략한 설명
-    .setDescription("test description")
+    .setDescription("ChefGPT API 목록")
     // API의 버전 설정
     .setVersion("1.0")
     // 문서에서 API들을 그룹화할 태그
