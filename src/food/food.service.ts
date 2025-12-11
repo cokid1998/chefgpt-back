@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { CreateFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -8,6 +9,17 @@ export class FoodService {
   async findCategory() {
     const categories = await this.prisma.category.findMany();
     return categories;
+  }
+
+  async createFood(payload: CreateFoodDto) {
+    const food = await this.prisma.food.create({
+      data: {
+        ...payload,
+        userId: 1, // Todo: Authorization header에서 userId를 추출하는 방식으로 변경 필요
+      },
+    });
+
+    return food;
   }
 
   async findFoodById(id: string) {
