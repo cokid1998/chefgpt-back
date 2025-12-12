@@ -72,7 +72,6 @@ export class AuthController {
       sameSite: "lax",
       path: "/",
     });
-    console.log("Asdf");
 
     return res.json({ success: true });
   }

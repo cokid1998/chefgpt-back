@@ -3,12 +3,14 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
-import { CreateFoodDto } from "src/food/dto/food.dto";
+import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { FoodService } from "src/food/food.service";
 
 @Controller("food")
@@ -32,7 +34,19 @@ export class FoodController {
     return this.foodService.createFood(payload);
   }
 
-  @Get(":id")
+  @Patch(":id") // food의 아이디
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: "음식 수정",
+  })
+  patchFood(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() payload: PatchFoodDto
+  ) {
+    return this.foodService.patchFood(id, payload);
+  }
+
+  @Get(":id") // 유저의 id
   @ApiOperation({
     summary: "유저가 저장한 음식들",
   })

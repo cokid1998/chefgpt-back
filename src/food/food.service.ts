@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { CreateFoodDto } from "src/food/dto/food.dto";
+import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -20,6 +20,15 @@ export class FoodService {
     });
 
     return food;
+  }
+
+  async patchFood(id: number, payload: PatchFoodDto) {
+    const result = await this.prisma.food.update({
+      where: { id },
+      data: payload,
+    });
+
+    return result;
   }
 
   async findFoodById(id: string) {

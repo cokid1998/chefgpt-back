@@ -7,7 +7,7 @@ import {
   IsString,
 } from "class-validator";
 import { Food_Location } from "prisma/generated/enums";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
 
 export class CreateFoodDto {
   @IsString()
@@ -41,7 +41,7 @@ export class CreateFoodDto {
   @IsDateString()
   @IsOptional()
   @ApiProperty({
-    example: "test@naver.com",
+    example: "2025-12-12",
   })
   expiration_date: string;
 
@@ -58,3 +58,5 @@ export class CreateFoodDto {
   })
   categoryId: number;
 }
+
+export class PatchFoodDto extends PartialType(CreateFoodDto) {}
