@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { UserService } from "src/user/user.service";
@@ -7,12 +7,15 @@ import { UserService } from "src/user/user.service";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(":id")
+  @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: "유저정보",
   })
-  findUserById(@Param("id") id: string) {
-    return this.userService.findUserById(Number(id));
+  getProfile(
+    @Req() req: Request & { user: { userId: number; email: string } }
+  ) {
+    const { userId } = req.user;
+    return this.userService.getProfile(userId);
   }
 }
