@@ -5,12 +5,16 @@ import {
   UsePipes,
   ValidationPipe,
   Res,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { LocalAuthGuard } from "src/auth/guard/local-auth.guard";
 
 // 1. 프론트에서 로그인 버튼을 누름
 // 2. "/auth/ligin"경로로 요청이 들어옴
@@ -25,21 +29,24 @@ export class AuthController {
 
   @Post("login")
   @UsePipes(new ValidationPipe())
+  @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: "로그인 API",
   })
-  async login(@Body() payload: LoginDto, @Res() res: Response) {
-    const { profile, accessToken, refreshToken } =
-      await this.authService.login(payload);
+  async login(@Request() req: any) {
+    console.log(req.user);
+    // const { profile, accessToken, refreshToken } =
+    //   await this.authService.login(payload);
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // 개발환경: false, 배포: true
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   secure: false, // 개발환경: false, 배포: true
+    //   sameSite: "lax",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
 
-    res.json({ profile, accessToken });
+    // res.json({ profile, accessToken });
+    return req.user;
   }
 
   @Post("signup")

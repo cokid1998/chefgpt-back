@@ -3,12 +3,14 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly userService: UserService
   ) {}
 
   async login(payload: LoginDto) {
@@ -65,5 +67,21 @@ export class AuthService {
     const { password, ...removePasswordUser } = existingUser;
 
     return { profile: removePasswordUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException("존재하지 않는 회원입니다.");
+    }
+
+    if (user.password !== password) {
+      throw new BadRequestException("비밀번호를 확인해주세요");
+    }
+
+    const { password: originPassword, ...removePassword } = user;
+
+    return { profile: removePassword };
   }
 }

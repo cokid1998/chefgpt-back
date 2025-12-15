@@ -17,4 +17,16 @@ export class UserService {
 
     return user;
   }
+
+  async findUserByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException("해당 유저를 찾을 수 없습니다.");
+    }
+
+    return user;
+  }
 }
