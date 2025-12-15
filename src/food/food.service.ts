@@ -11,29 +11,29 @@ export class FoodService {
     return categories;
   }
 
-  async createFood(payload: CreateFoodDto) {
+  async createFood(userId: number, payload: CreateFoodDto) {
     const food = await this.prisma.food.create({
       data: {
         ...payload,
-        userId: 1, // Todo: Authorization header에서 userId를 추출하는 방식으로 변경 필요
+        userId,
       },
     });
 
     return food;
   }
 
-  async patchFood(id: number, payload: PatchFoodDto) {
+  async patchFood(foodId: number, payload: PatchFoodDto) {
     const result = await this.prisma.food.update({
-      where: { id },
+      where: { id: foodId },
       data: payload,
     });
 
     return result;
   }
 
-  async findFoodById(id: string) {
+  async findFoodById(userId: number) {
     const foods = await this.prisma.food.findMany({
-      where: { userId: Number(id) }, //Todo: Number를 안쓰게 하는방법이 있을꺼같은데
+      where: { userId },
       select: {
         id: true,
         name: true,

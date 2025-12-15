@@ -6,10 +6,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
+  Req,
 } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { FoodService } from "src/food/food.service";
 
@@ -26,31 +29,40 @@ export class FoodController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: "음식 추가",
   })
-  createFood(@Body() payload: CreateFoodDto) {
-    return this.foodService.createFood(payload);
+  createFood(
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Body() payload: CreateFoodDto
+  ) {
+    const { userId, email } = req.user;
+    return this.foodService.createFood(userId, payload);
   }
 
-  @Patch(":id") // food의 아이디
+  @Patch(":foodId")
   @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: "음식 수정",
   })
   patchFood(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("foodId", ParseIntPipe) foodId: number,
     @Body() payload: PatchFoodDto
   ) {
-    return this.foodService.patchFood(id, payload);
+    return this.foodService.patchFood(foodId, payload);
   }
 
-  @Get(":id") // 유저의 id
+  @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: "유저가 저장한 음식들",
   })
-  findFoodById(@Param("id") id: string) {
-    return this.foodService.findFoodById(id);
+  findFoodById(
+    @Req() req: Request & { user: { userId: number; email: string } }
+  ) {
+    const { userId, email } = req.user;
+    return this.foodService.findFoodById(userId);
   }
 }
