@@ -6,7 +6,7 @@ import { BadRequestException } from "@nestjs/common";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findUserById(id: string) {
+  async findUserById(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: Number(id) },
     });
@@ -15,8 +15,6 @@ export class UserService {
       throw new BadRequestException("해당 유저를 찾을 수 없습니다.");
     }
 
-    const { password, ...removePasswordUser } = user;
-
-    return removePasswordUser;
+    return user;
   }
 }

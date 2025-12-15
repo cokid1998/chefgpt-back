@@ -11,6 +11,6 @@ export class UserController {
     summary: "유저정보",
   })
   findUserById(@Param("id") id: string) {
-    return this.userService.findUserById(id);
+    return this.userService.findUserById(Number(id));
   }
 }
