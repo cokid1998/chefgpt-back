@@ -13,7 +13,7 @@ import { AuthService } from "src/auth/auth.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
 import { LocalAuthGuard } from "src/auth/guard/local-auth.guard";
 import { Response } from "express";
-import { AuthUser } from "src/auth/local.strategy";
+import { AuthUser } from "src/auth/strategy/local.strategy";
 
 // 1. 프론트에서 로그인 버튼을 누름
 // 2. "/auth/ligin"경로로 요청이 들어옴
