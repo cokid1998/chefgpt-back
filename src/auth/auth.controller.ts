@@ -55,10 +55,14 @@ export class AuthController {
 
   @Post("signup")
   @UsePipes(new ValidationPipe())
+  @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: "회원가입",
   })
-  async signup(@Body() payload: SignupDto, @Res() res: Response) {
+  async signup(
+    @Body() payload: SignupDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
     const { profile, accessToken, refreshToken } =
       await this.authService.signup(payload);
 
@@ -69,7 +73,10 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ profile, accessToken });
+    return {
+      profile,
+      accessToken,
+    };
   }
 
   @Post("/logout")

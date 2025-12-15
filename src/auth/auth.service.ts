@@ -56,9 +56,9 @@ export class AuthService {
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
       expiresIn: "7d",
     });
-    const { password, ...removePasswordUser } = existingUser;
+    const { password: _, ...safeUser } = newUser;
 
-    return { profile: removePasswordUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
+    return { profile: safeUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
   }
 
   async validateUser(email: string, password: string) {
