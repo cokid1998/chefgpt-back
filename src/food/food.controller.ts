@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
   Req,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
@@ -60,10 +61,12 @@ export class FoodController {
     summary: "유저가 저장한 모든 음식",
   })
   findAllFood(
-    @Req() req: Request & { user: { userId: number; email: string } }
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Query("category") category?: string,
+    @Query("search") search?: string
   ) {
     const { userId, email: _ } = req.user;
-    return this.foodService.findAllFood(userId);
+    return this.foodService.findAllFood(userId, category, search);
   }
 
   @Get(":foodId")

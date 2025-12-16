@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
+import { Prisma } from "prisma/generated/client";
 
 @Injectable()
 export class FoodService {
@@ -31,9 +32,24 @@ export class FoodService {
     return result;
   }
 
-  async findAllFood(userId: number) {
+  async findAllFood(userId: number, category: string, search: string) {
+    const where: Prisma.FoodWhereInput = { userId }; // Todo: any없애기
+
+    if (category) {
+      where.category = {
+        name: category,
+      };
+    }
+
+    if (search) {
+      where.name = {
+        contains: search,
+        mode: "insensitive",
+      };
+    }
+
     const foods = await this.prisma.food.findMany({
-      where: { userId },
+      where,
       select: {
         id: true,
         name: true,
