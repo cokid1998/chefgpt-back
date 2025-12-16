@@ -31,7 +31,7 @@ export class FoodService {
     return result;
   }
 
-  async findFoodById(userId: number) {
+  async findAllFood(userId: number) {
     const foods = await this.prisma.food.findMany({
       where: { userId },
       select: {

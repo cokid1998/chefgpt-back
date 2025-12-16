@@ -57,12 +57,12 @@ export class FoodController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: "유저가 저장한 음식들",
+    summary: "유저가 저장한 모든 음식",
   })
-  findFoodById(
+  findAllFood(
     @Req() req: Request & { user: { userId: number; email: string } }
   ) {
-    const { userId, email } = req.user;
-    return this.foodService.findFoodById(userId);
+    const { userId, email: _ } = req.user;
+    return this.foodService.findAllFood(userId);
   }
 }
