@@ -59,6 +59,16 @@ export class FoodService {
         id: foodId,
         userId,
       },
+      select: {
+        id: true,
+        name: true,
+        location: true,
+        quantity: true,
+        unit: true,
+        expiration_date: true,
+        memo: true,
+        category: true,
+      },
     });
 
     if (!food) {
