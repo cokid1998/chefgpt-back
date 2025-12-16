@@ -65,4 +65,18 @@ export class FoodController {
     const { userId, email: _ } = req.user;
     return this.foodService.findAllFood(userId);
   }
+
+  @Get(":foodId")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "음식 단건 조회",
+  })
+  findOneFood(
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Param("foodId", ParseIntPipe) foodId: number
+  ) {
+    const { userId, email: _ } = req.user;
+
+    return this.foodService.findOneFood(userId, foodId);
+  }
 }

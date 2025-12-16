@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -51,5 +51,20 @@ export class FoodService {
       },
     });
     return foods;
+  }
+
+  async findOneFood(userId: number, foodId: number) {
+    const food = await this.prisma.food.findFirst({
+      where: {
+        id: foodId,
+        userId,
+      },
+    });
+
+    if (!food) {
+      throw new NotFoundException("음식을 찾을 수 없습니다.");
+    }
+
+    return food;
   }
 }
