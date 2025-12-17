@@ -14,6 +14,15 @@ async function bootstrap() {
     .setVersion("1.0")
     // 문서에서 API들을 그룹화할 태그
     // .addTag("test")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "JWT 토큰을 입력하세요",
+      },
+      "access-token"
+    )
     .build();
 
   // Swagger 문서 생성 함수 정의
