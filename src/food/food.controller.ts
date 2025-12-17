@@ -69,6 +69,18 @@ export class FoodController {
     return this.foodService.findAllFood(userId, category, search);
   }
 
+  @Get("count")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "음식 보관장소별갯수",
+  })
+  countLocation(
+    @Req() req: Request & { user: { userId: number; email: string } }
+  ) {
+    const { userId, email: _ } = req.user;
+    return this.foodService.count(userId);
+  }
+
   @Get(":foodId")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({

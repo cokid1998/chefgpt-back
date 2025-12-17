@@ -33,7 +33,7 @@ export class FoodService {
   }
 
   async findAllFood(userId: number, category: string, search: string) {
-    const where: Prisma.FoodWhereInput = { userId }; // Todo: any없애기
+    const where: Prisma.FoodWhereInput = { userId };
 
     if (category) {
       where.category = {
@@ -92,5 +92,20 @@ export class FoodService {
     }
 
     return food;
+  }
+
+  async count(userId: number) {
+    const foods = await this.prisma.food.findMany({
+      where: { userId },
+    });
+
+    const count = {
+      total: foods.length,
+      cold: foods.filter((food) => food.location === "COLD").length,
+      frozen: foods.filter((food) => food.location === "FROZEN").length,
+      roomTemp: foods.filter((food) => food.location === "ROOM_TEMP").length,
+    };
+
+    return count;
   }
 }
