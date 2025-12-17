@@ -12,7 +12,7 @@ import {
   Req,
   Query,
 } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiQuery } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { FoodService } from "src/food/food.service";
@@ -31,6 +31,7 @@ export class FoodController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: "음식 추가",
@@ -57,6 +58,7 @@ export class FoodController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "유저가 저장한 모든 음식",
   })
@@ -71,6 +73,7 @@ export class FoodController {
 
   @Get("count")
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "음식 보관장소별갯수",
   })
@@ -83,6 +86,7 @@ export class FoodController {
 
   @Get(":foodId")
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "음식 단건 조회",
   })

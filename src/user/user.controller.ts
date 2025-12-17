@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { UserService } from "src/user/user.service";
 
@@ -9,6 +9,7 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "유저정보",
   })
