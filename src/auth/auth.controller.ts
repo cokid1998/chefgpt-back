@@ -55,7 +55,6 @@ export class AuthController {
 
   @Post("signup")
   @UsePipes(new ValidationPipe())
-  @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: "회원가입",
   })
