@@ -8,7 +8,7 @@ import {
   UseGuards,
   Request,
 } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiOperation, ApiBody } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
 import { LocalAuthGuard } from "src/auth/guard/local-auth.guard";
@@ -31,6 +31,22 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: "로그인 API",
+  })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          example: "test@naver.com",
+        },
+        password: {
+          type: "string",
+          example: "1234",
+        },
+      },
+      required: ["email", "password"],
+    },
   })
   async login(
     @Request() req: Request & { user: AuthUser },
@@ -58,6 +74,22 @@ export class AuthController {
   @ApiOperation({
     summary: "회원가입",
   })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          example: "chef@naver.com",
+        },
+        password: {
+          type: "string",
+          example: "1q2w3e4r!",
+        },
+      },
+      required: ["email", "password"],
+    },
+  })
   async signup(
     @Body() payload: SignupDto,
     @Res({ passthrough: true }) res: Response
@@ -81,6 +113,7 @@ export class AuthController {
   @Post("/logout")
   @ApiOperation({
     summary: "로그아웃",
+    description: "프론트 쿠키에 존재하는 리프레쉬 토큰 제거",
   })
   logOut(@Res() res: Response) {
     res.clearCookie("refreshToken", {

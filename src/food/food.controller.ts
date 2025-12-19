@@ -62,6 +62,20 @@ export class FoodController {
   @ApiOperation({
     summary: "유저가 저장한 모든 음식",
   })
+  @ApiQuery({
+    name: "category",
+    type: "string",
+    description: "음식 카테고리",
+    example: "해산물",
+    required: false,
+  })
+  @ApiQuery({
+    name: "search",
+    type: "string",
+    description: "음식 검색어",
+    example: "연어",
+    required: false,
+  })
   findAllFood(
     @Req() req: Request & { user: { userId: number; email: string } },
     @Query("category") category?: string,
