@@ -11,6 +11,7 @@ import {
   ValidationPipe,
   Req,
   Query,
+  Delete,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiQuery } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
@@ -111,5 +112,15 @@ export class FoodController {
     const { userId, email: _ } = req.user;
 
     return this.foodService.findOneFood(userId, foodId);
+  }
+
+  @Delete(":foodId")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "음식 제거",
+  })
+  deleteFood(@Param("foodId", ParseIntPipe) foodId: number) {
+    return this.foodService.deleteFood(foodId);
   }
 }

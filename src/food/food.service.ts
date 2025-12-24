@@ -108,4 +108,14 @@ export class FoodService {
 
     return count;
   }
+
+  async deleteFood(foodId: number) {
+    const result = this.prisma.food.delete({
+      where: {
+        id: foodId,
+      },
+    });
+
+    return result;
+  }
 }
