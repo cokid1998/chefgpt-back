@@ -65,7 +65,7 @@ model Food {
 model Vote {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
+  description String?
   optionA     String
   optionB     String
   startDate   DateTime
