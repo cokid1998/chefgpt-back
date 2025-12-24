@@ -62,4 +62,29 @@ export class VoteService {
 
     return result;
   }
+
+  async countVote() {
+    const now = dayjs().toDate();
+
+    const [totalVoteCount, activeVoteCount, totalParticipants] =
+      await Promise.all([
+        // 총 투표 개수
+        this.prisma.vote.count(),
+        // 진행중인 투표 개수
+        this.prisma.vote.count({
+          where: { startDate: { lte: now }, endDate: { gt: now } },
+        }),
+        // 모든 투표에 투표한 인원수 (중복제거)
+        this.prisma.vote_User.findMany({
+          select: { userId: true },
+          distinct: ["userId"],
+        }),
+      ]);
+
+    return {
+      totalVoteCount,
+      activeVoteCount,
+      totalParticipants: totalParticipants.length,
+    };
+  }
 }

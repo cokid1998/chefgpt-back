@@ -50,4 +50,12 @@ export class VoteController {
   createVote(@Body() payload: CreateVoteDto) {
     return this.voteService.createVote(payload);
   }
+
+  @Get("count")
+  @ApiOperation({
+    summary: "투표 개수",
+  })
+  countVote() {
+    return this.voteService.countVote();
+  }
 }
