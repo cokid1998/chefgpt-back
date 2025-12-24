@@ -32,3 +32,13 @@ export type Category = Prisma.CategoryModel
  * 
  */
 export type Food = Prisma.FoodModel
+/**
+ * Model Vote
+ * 
+ */
+export type Vote = Prisma.VoteModel
+/**
+ * Model Vote_User
+ * 
+ */
+export type Vote_User = Prisma.Vote_UserModel

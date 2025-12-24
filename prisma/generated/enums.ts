@@ -16,3 +16,11 @@ export const Food_Location = {
 } as const
 
 export type Food_Location = (typeof Food_Location)[keyof typeof Food_Location]
+
+
+export const Option_Name = {
+  A: 'A',
+  B: 'B'
+} as const
+
+export type Option_Name = (typeof Option_Name)[keyof typeof Option_Name]

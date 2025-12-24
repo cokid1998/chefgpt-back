@@ -206,6 +206,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type EnumOption_NameFilter<$PrismaModel = never> = {
+  equals?: $Enums.Option_Name | Prisma.EnumOption_NameFieldRefInput<$PrismaModel>
+  in?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOption_NameFilter<$PrismaModel> | $Enums.Option_Name
+}
+
+export type EnumOption_NameWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Option_Name | Prisma.EnumOption_NameFieldRefInput<$PrismaModel>
+  in?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOption_NameWithAggregatesFilter<$PrismaModel> | $Enums.Option_Name
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -409,6 +426,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumOption_NameFilter<$PrismaModel = never> = {
+  equals?: $Enums.Option_Name | Prisma.EnumOption_NameFieldRefInput<$PrismaModel>
+  in?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOption_NameFilter<$PrismaModel> | $Enums.Option_Name
+}
+
+export type NestedEnumOption_NameWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Option_Name | Prisma.EnumOption_NameFieldRefInput<$PrismaModel>
+  in?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Option_Name[] | Prisma.ListEnumOption_NameFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOption_NameWithAggregatesFilter<$PrismaModel> | $Enums.Option_Name
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
 }
 
 

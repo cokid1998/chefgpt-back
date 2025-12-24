@@ -14,6 +14,11 @@ enum Food_Location {
   ROOM_TEMP
 }
 
+enum Option_Name {
+  A
+  B
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -24,6 +29,9 @@ model User {
 
   // User와 Food의 관계
   foods Food[]
+
+  // User와 Vote의 관계
+  voteUsers Vote_User[]
 }
 
 model Category {
@@ -52,4 +60,27 @@ model Food {
 
   @@index([userId])
   @@index([categoryId])
+}
+
+model Vote {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  optionA     String
+  optionB     String
+  startDate   DateTime
+  endDate     DateTime
+
+  // Vote와 User의 관계
+  voteUsers Vote_User[]
+}
+
+model Vote_User {
+  id           Int         @id @default(autoincrement())
+  voteId       Int
+  userId       Int
+  selectOption Option_Name
+
+  vote Vote @relation(fields: [voteId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

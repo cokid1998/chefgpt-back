@@ -11,4 +11,6 @@
 export type * from './models/User'
 export type * from './models/Category'
 export type * from './models/Food'
+export type * from './models/Vote'
+export type * from './models/Vote_User'
 export type * from './commonInputTypes'
