@@ -24,14 +24,14 @@ export class CreateVoteDto {
   })
   description: string;
 
-  @IsEnum(Option_Name)
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: "그렇다",
   })
   optionA: string;
 
-  @IsEnum(Option_Name)
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: "아니다",

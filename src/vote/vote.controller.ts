@@ -48,6 +48,6 @@ export class VoteController {
     summary: "투표 생성",
   })
   createVote(@Body() payload: CreateVoteDto) {
-    return this.voteService.createVote();
+    return this.voteService.createVote(payload);
   }
 }
