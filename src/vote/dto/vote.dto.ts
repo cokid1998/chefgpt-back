@@ -52,3 +52,12 @@ export class CreateVoteDto {
   })
   endDate: string;
 }
+
+export class CreateSubmitVoteDto {
+  @IsEnum(Option_Name)
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "A",
+  })
+  selectOption: Option_Name;
+}

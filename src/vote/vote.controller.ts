@@ -2,14 +2,17 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
+  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
 import { VoteService } from "./vote.service";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { CreateVoteDto } from "src/vote/dto/vote.dto";
+import { CreateSubmitVoteDto, CreateVoteDto } from "src/vote/dto/vote.dto";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 
 @Controller("vote")
@@ -57,5 +60,22 @@ export class VoteController {
   })
   countVote() {
     return this.voteService.countVote();
+  }
+
+  @Post(":voteId/submit")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: "투표하기",
+  })
+  submitVote(
+    @Param("voteId", ParseIntPipe) voteId: string,
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Body() payload: CreateSubmitVoteDto
+  ) {
+    console.log("voteId", voteId);
+    console.log("req", req.user);
+    console.log("payload", payload);
   }
 }
