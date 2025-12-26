@@ -129,9 +129,8 @@ export class VoteService {
 
     // 이미 투표를 했으면
     if (existingVote) {
-      // 동일한 옵션으로 들어오는 요청은 에러처리
+      // 동일한 옵션으로 들어오는 요청은 삭제
       if (existingVote.selectOption === payload.selectOption) {
-        // throw new Error("이미 선택한 옵션입니다.");
         const result = await this.prisma.vote_User.delete({
           where: {
             voteId_userId: {
