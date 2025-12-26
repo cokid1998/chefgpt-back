@@ -131,7 +131,16 @@ export class VoteService {
     if (existingVote) {
       // 동일한 옵션으로 들어오는 요청은 에러처리
       if (existingVote.selectOption === payload.selectOption) {
-        throw new Error("이미 선택한 옵션입니다.");
+        // throw new Error("이미 선택한 옵션입니다.");
+        const result = await this.prisma.vote_User.delete({
+          where: {
+            voteId_userId: {
+              voteId,
+              userId,
+            },
+          },
+        });
+        return result;
       }
 
       // 옵션 변경은 DB에 update 요청
