@@ -83,4 +83,7 @@ model Vote_User {
 
   vote Vote @relation(fields: [voteId], references: [id])
   user User @relation(fields: [userId], references: [id])
+
+  // 동일한 userId는 동일한 VoteId를 여러개 가질 수 없음
+  @@unique([voteId, userId])
 }

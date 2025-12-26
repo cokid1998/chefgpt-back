@@ -74,10 +74,10 @@ export class VoteService {
         this.prisma.vote.count({
           where: { startDate: { lte: now }, endDate: { gt: now } },
         }),
-        // 모든 투표에 투표한 인원수 (중복제거)
+        // 모든 투표에 투표한 인원수
         this.prisma.vote_User.findMany({
           select: { userId: true },
-          distinct: ["userId"],
+          // distinct: ["userId"],
         }),
       ]);
 
@@ -93,6 +93,39 @@ export class VoteService {
     userId: number,
     payload: CreateSubmitVoteDto
   ) {
+    // 이미 투표를 했는지 확인
+    const existingVote = await this.prisma.vote_User.findUnique({
+      where: {
+        voteId_userId: {
+          voteId,
+          userId,
+        },
+      },
+    });
+
+    // 이미 투표를 했으면
+    if (existingVote) {
+      // 동일한 옵션으로 들어오는 요청은 에러처리
+      if (existingVote.selectOption === payload.selectOption) {
+        throw new Error("이미 선택한 옵션입니다.");
+      }
+
+      // 옵션 변경은 DB에 update 요청
+      const result = await this.prisma.vote_User.update({
+        where: {
+          voteId_userId: {
+            voteId,
+            userId,
+          },
+        },
+        data: {
+          selectOption: payload.selectOption,
+        },
+      });
+
+      return result;
+    }
+
     const result = this.prisma.vote_User.create({
       data: {
         voteId,
