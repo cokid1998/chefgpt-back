@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import dayjs from "dayjs";
-import { CreateVoteDto } from "src/vote/dto/vote.dto";
+import { CreateSubmitVoteDto, CreateVoteDto } from "src/vote/dto/vote.dto";
 
 @Injectable()
 export class VoteService {
@@ -86,5 +86,20 @@ export class VoteService {
       activeVoteCount,
       totalParticipants: totalParticipants.length,
     };
+  }
+
+  async submitVote(
+    voteId: number,
+    userId: number,
+    payload: CreateSubmitVoteDto
+  ) {
+    const result = this.prisma.vote_User.create({
+      data: {
+        voteId,
+        userId,
+        selectOption: payload.selectOption,
+      },
+    });
+    return result;
   }
 }

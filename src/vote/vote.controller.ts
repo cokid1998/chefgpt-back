@@ -70,12 +70,10 @@ export class VoteController {
     summary: "투표하기",
   })
   submitVote(
-    @Param("voteId", ParseIntPipe) voteId: string,
+    @Param("voteId", ParseIntPipe) voteId: number,
     @Req() req: Request & { user: { userId: number; email: string } },
     @Body() payload: CreateSubmitVoteDto
   ) {
-    console.log("voteId", voteId);
-    console.log("req", req.user);
-    console.log("payload", payload);
+    return this.voteService.submitVote(voteId, req.user.userId, payload);
   }
 }
