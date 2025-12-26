@@ -13,7 +13,10 @@ import {
 import { VoteService } from "./vote.service";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { CreateSubmitVoteDto, CreateVoteDto } from "src/vote/dto/vote.dto";
-import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
+import {
+  JwtAuthGuard,
+  OptionalJwtAuthGuard,
+} from "src/auth/guard/jwt-auth.guard";
 
 @Controller("vote")
 export class VoteController {
@@ -28,14 +31,22 @@ export class VoteController {
   }
 
   @Get("active")
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "진행중인 투표",
   })
-  findActiveVote() {
-    return this.voteService.findActiveVote();
+  findActiveVote(
+    @Req() req: Request & { user: { userId: number; email: string } }
+  ) {
+    // 로그인을 했을 때면 userId, 안했을 때는 null
+    const userId = req.user?.userId ?? null;
+    return this.voteService.findActiveVote(userId);
   }
 
   @Get("close")
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "종료된 투표",
   })

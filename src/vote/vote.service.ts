@@ -12,7 +12,7 @@ export class VoteService {
     return votes;
   }
 
-  async findActiveVote() {
+  async findActiveVote(userId: number | null) {
     const now = dayjs();
     const activeVotes = await this.prisma.vote.findMany({
       where: {
@@ -31,7 +31,18 @@ export class VoteService {
       },
     });
 
-    return activeVotes;
+    const addSelectOptionsVotes = activeVotes.map((vote) => {
+      const { voteUsers, ...voteWithoutUsers } = vote;
+
+      return {
+        ...voteWithoutUsers,
+        selectedOptions: userId
+          ? (voteUsers.find((v) => v.userId === userId)?.selectOption ?? null)
+          : null,
+      };
+    });
+
+    return addSelectOptionsVotes;
   }
 
   async findCloseVote() {
