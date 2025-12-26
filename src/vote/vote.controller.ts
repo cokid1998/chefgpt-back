@@ -50,8 +50,11 @@ export class VoteController {
   @ApiOperation({
     summary: "종료된 투표",
   })
-  findCloseVote() {
-    return this.voteService.findCloseVote();
+  findCloseVote(
+    @Req() req: Request & { user: { userId: number; email: string } }
+  ) {
+    const userId = req.user?.userId ?? null;
+    return this.voteService.findCloseVote(userId);
   }
 
   @Post()

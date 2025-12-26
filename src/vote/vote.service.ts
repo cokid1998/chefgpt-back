@@ -12,6 +12,7 @@ export class VoteService {
     return votes;
   }
 
+  // Todo: findCloseVote와 통합
   async findActiveVote(userId: number | null) {
     const now = dayjs();
     const activeVotes = await this.prisma.vote.findMany({
@@ -58,7 +59,8 @@ export class VoteService {
     return addSelectOptionsVotes;
   }
 
-  async findCloseVote() {
+  // Todo: findActiveVote 통합
+  async findCloseVote(userId: number) {
     const now = dayjs();
     const closeVotes = await this.prisma.vote.findMany({
       where: {
@@ -74,7 +76,31 @@ export class VoteService {
       },
     });
 
-    return closeVotes;
+    const addSelectOptionsVotes = closeVotes.map((vote) => {
+      const { voteUsers, ...voteWithoutUsers } = vote;
+
+      const participantsCount = voteUsers.length;
+      const countA = voteUsers.filter((v) => v.selectOption === "A").length;
+      const countB = voteUsers.filter((v) => v.selectOption === "B").length;
+
+      return {
+        ...voteWithoutUsers,
+        participantsCount,
+        optionARatio:
+          participantsCount > 0
+            ? Math.round((countA / participantsCount) * 100)
+            : 0,
+        optionBRatio:
+          participantsCount > 0
+            ? Math.round((countB / participantsCount) * 100)
+            : 0,
+        selectedOptions: userId
+          ? (voteUsers.find((v) => v.userId === userId)?.selectOption ?? null)
+          : null,
+      };
+    });
+
+    return addSelectOptionsVotes;
   }
 
   async createVote(payload: CreateVoteDto) {
