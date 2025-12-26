@@ -34,8 +34,21 @@ export class VoteService {
     const addSelectOptionsVotes = activeVotes.map((vote) => {
       const { voteUsers, ...voteWithoutUsers } = vote;
 
+      const participantsCount = voteUsers.length;
+      const countA = voteUsers.filter((v) => v.selectOption === "A").length;
+      const countB = voteUsers.filter((v) => v.selectOption === "B").length;
+
       return {
         ...voteWithoutUsers,
+        participantsCount,
+        optionARatio:
+          participantsCount > 0
+            ? Math.round((countA / participantsCount) * 100)
+            : 0,
+        optionBRatio:
+          participantsCount > 0
+            ? Math.round((countB / participantsCount) * 100)
+            : 0,
         selectedOptions: userId
           ? (voteUsers.find((v) => v.userId === userId)?.selectOption ?? null)
           : null,
