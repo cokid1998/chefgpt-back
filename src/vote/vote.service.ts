@@ -7,32 +7,25 @@ import { CreateSubmitVoteDto, CreateVoteDto } from "src/vote/dto/vote.dto";
 export class VoteService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllVote() {
-    const votes = await this.prisma.vote.findMany();
-    return votes;
-  }
-
-  // Todo: findCloseVote와 통합
-  async findActiveVote(userId: number | null) {
+  async findVotes(userId: number | null, status: "active" | "close") {
     const now = dayjs();
-    const activeVotes = await this.prisma.vote.findMany({
+
+    const votes = await this.prisma.vote.findMany({
       where: {
-        startDate: {
-          lte: now.toDate(),
-        },
-        endDate: {
-          gt: now.toDate(),
-        },
+        ...(status === "active"
+          ? {
+              startDate: { lte: now.toDate() },
+              endDate: { gt: now.toDate() },
+            }
+          : {
+              endDate: { lte: now.toDate() },
+            }),
       },
-      include: {
-        voteUsers: true,
-      },
-      orderBy: {
-        endDate: "asc",
-      },
+      include: { voteUsers: true },
+      orderBy: { endDate: status === "active" ? "asc" : "desc" },
     });
 
-    const addSelectOptionsVotes = activeVotes.map((vote) => {
+    const formatVotes = votes.map((vote) => {
       const { voteUsers, ...voteWithoutUsers } = vote;
 
       const participantsCount = voteUsers.length;
@@ -50,57 +43,14 @@ export class VoteService {
           participantsCount > 0
             ? Math.round((countB / participantsCount) * 100)
             : 0,
+
         selectedOptions: userId
           ? (voteUsers.find((v) => v.userId === userId)?.selectOption ?? null)
           : null,
       };
     });
 
-    return addSelectOptionsVotes;
-  }
-
-  // Todo: findActiveVote 통합
-  async findCloseVote(userId: number) {
-    const now = dayjs();
-    const closeVotes = await this.prisma.vote.findMany({
-      where: {
-        endDate: {
-          lte: now.toDate(),
-        },
-      },
-      include: {
-        voteUsers: true,
-      },
-      orderBy: {
-        endDate: "desc",
-      },
-    });
-
-    const addSelectOptionsVotes = closeVotes.map((vote) => {
-      const { voteUsers, ...voteWithoutUsers } = vote;
-
-      const participantsCount = voteUsers.length;
-      const countA = voteUsers.filter((v) => v.selectOption === "A").length;
-      const countB = voteUsers.filter((v) => v.selectOption === "B").length;
-
-      return {
-        ...voteWithoutUsers,
-        participantsCount,
-        optionARatio:
-          participantsCount > 0
-            ? Math.round((countA / participantsCount) * 100)
-            : 0,
-        optionBRatio:
-          participantsCount > 0
-            ? Math.round((countB / participantsCount) * 100)
-            : 0,
-        selectedOptions: userId
-          ? (voteUsers.find((v) => v.userId === userId)?.selectOption ?? null)
-          : null,
-      };
-    });
-
-    return addSelectOptionsVotes;
+    return formatVotes;
   }
 
   async createVote(payload: CreateVoteDto) {

@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -23,38 +25,17 @@ export class VoteController {
   constructor(private readonly voteService: VoteService) {}
 
   @Get()
-  @ApiOperation({
-    summary: "투표 데이터",
-  })
-  findAllVote() {
-    return this.voteService.findAllVote();
-  }
-
-  @Get("active")
   @UseGuards(OptionalJwtAuthGuard)
   @ApiBearerAuth("access-token")
   @ApiOperation({
-    summary: "진행중인 투표",
+    summary: "투표 데이터 (진행중, 종료)",
   })
-  findActiveVote(
-    @Req() req: Request & { user: { userId: number; email: string } }
-  ) {
-    // 로그인을 했을 때면 userId, 안했을 때는 null
-    const userId = req.user?.userId ?? null;
-    return this.voteService.findActiveVote(userId);
-  }
-
-  @Get("close")
-  @UseGuards(OptionalJwtAuthGuard)
-  @ApiBearerAuth("access-token")
-  @ApiOperation({
-    summary: "종료된 투표",
-  })
-  findCloseVote(
+  findVotes(
+    @Query("status", new DefaultValuePipe("active")) status: "active" | "close",
     @Req() req: Request & { user: { userId: number; email: string } }
   ) {
     const userId = req.user?.userId ?? null;
-    return this.voteService.findCloseVote(userId);
+    return this.voteService.findVotes(userId, status);
   }
 
   @Post()
