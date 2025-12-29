@@ -7,6 +7,8 @@ import { UserModule } from "src/user/user.module";
 import { PassportModule } from "@nestjs/passport";
 import { LocalStrategy } from "src/auth/strategy/local.strategy";
 import { JwtStrategy } from "src/auth/strategy/jwt.strategy";
+import { KakaoService } from "src/auth/kakao/kakao.service";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   imports: [
@@ -22,9 +24,10 @@ import { JwtStrategy } from "src/auth/strategy/jwt.strategy";
     UserModule,
     PassportModule,
     ConfigModule,
+    HttpModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, KakaoService],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -14,10 +14,14 @@ import { SignupDto } from "src/auth/dto/signup.dto";
 import { LocalAuthGuard } from "src/auth/guard/local-auth.guard";
 import { Response } from "express";
 import { AuthUser } from "src/auth/strategy/local.strategy";
+import { KakaoService } from "src/auth/kakao/kakao.service";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly kakaoService: KakaoService
+  ) {}
 
   @Post("login")
   @UsePipes(new ValidationPipe())
@@ -117,5 +121,23 @@ export class AuthController {
     });
 
     return res.json({ success: true });
+  }
+
+  @Post("kakao")
+  async kakaoLogin(
+    @Body("code") code: string,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { profile, accessToken, refreshToken } =
+      await this.kakaoService.kakaoLogin(code);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // 개발환경: false, 배포: true
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return { profile, accessToken };
   }
 }
