@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma } from "prisma/generated/client";
+import { parseUtcDate } from "src/util/date";
 
 @Injectable()
 export class FoodService {
@@ -16,6 +17,7 @@ export class FoodService {
     const food = await this.prisma.food.create({
       data: {
         ...payload,
+        expiration_date: parseUtcDate(payload.expiration_date, "start"),
         userId,
       },
     });
@@ -26,7 +28,10 @@ export class FoodService {
   async patchFood(foodId: number, payload: PatchFoodDto) {
     const result = await this.prisma.food.update({
       where: { id: foodId },
-      data: payload,
+      data: {
+        ...payload,
+        expiration_date: parseUtcDate(payload.expiration_date, "start"),
+      },
     });
 
     return result;

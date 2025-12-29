@@ -38,7 +38,7 @@ export class CreateFoodDto {
   })
   unit: string;
 
-  @IsDateString()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     example: "2025-12-12",
