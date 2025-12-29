@@ -1,11 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import dayjs from "dayjs";
 import { Option_Name } from "prisma/generated/enums";
 
@@ -38,17 +32,17 @@ export class CreateVoteDto {
   })
   optionB: string;
 
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: dayjs().startOf("day").add(7, "day").format(),
+    example: dayjs().format("YYYY-MM-DD"),
   })
   startDate: string;
 
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: dayjs().startOf("day").add(7, "day").format(),
+    example: dayjs().add(7, "day").format("YYYY-MM-DD"),
   })
   endDate: string;
 }

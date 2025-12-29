@@ -2,13 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import dayjs from "dayjs";
 import { CreateSubmitVoteDto, CreateVoteDto } from "src/vote/dto/vote.dto";
+import { parseUtcDate } from "src/util/date";
 
 @Injectable()
 export class VoteService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findVotes(userId: number | null, status: "active" | "close") {
-    const now = dayjs();
+    const now = dayjs().utc();
 
     const votes = await this.prisma.vote.findMany({
       where: {
@@ -54,9 +55,15 @@ export class VoteService {
   }
 
   async createVote(payload: CreateVoteDto) {
+    const parsedStartDate = parseUtcDate(payload.startDate, "start");
+
+    const parsedEndDate = parseUtcDate(payload.endDate, "end");
+
     const result = await this.prisma.vote.create({
       data: {
         ...payload,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
       },
     });
 
