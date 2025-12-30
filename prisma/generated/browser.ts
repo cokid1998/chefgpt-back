@@ -42,3 +42,13 @@ export type Vote = Prisma.VoteModel
  * 
  */
 export type Vote_User = Prisma.Vote_UserModel
+/**
+ * Model Article
+ * 
+ */
+export type Article = Prisma.ArticleModel
+/**
+ * Model Article_Category
+ * 
+ */
+export type Article_Category = Prisma.Article_CategoryModel

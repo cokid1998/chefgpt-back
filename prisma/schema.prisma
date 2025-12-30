@@ -94,3 +94,24 @@ model Vote_User {
   // 동일한 userId는 동일한 VoteId를 여러개 가질 수 없음
   @@unique([voteId, userId])
 }
+
+model Article {
+  id      Int     @id @default(autoincrement())
+  title   String
+  summary String?
+  content String
+
+  // 외부키
+  categoryId Int
+  category   Article_Category @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
+}
+
+model Article_Category {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  // Article관의 관계
+  articles Article[]
+}
