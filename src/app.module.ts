@@ -5,9 +5,10 @@ import { ConfigModule } from "@nestjs/config";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { FoodModule } from './food/food.module';
 import { VoteModule } from './vote/vote.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UserModule, PrismaModule, FoodModule, VoteModule],
+  imports: [ConfigModule.forRoot(), AuthModule, UserModule, PrismaModule, FoodModule, VoteModule, ArticleModule],
   controllers: [],
   providers: [],
 })
