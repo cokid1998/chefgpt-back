@@ -48,6 +48,7 @@ export class AuthService {
         nickname: "test", // Todo: 랜덤닉네임
         thumbnail: "",
         password: payload.password, // Todo: 암호화
+        authProvider: "LOCAL",
       },
     });
 

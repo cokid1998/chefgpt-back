@@ -17,6 +17,7 @@ export interface KAKAOUserRes {
     thumbnail_image: string;
   };
   kakao_account: {
+    email: string;
     profile_nickname_needs_agreement: boolean;
     profile_image_needs_agreement: boolean;
     profile: {

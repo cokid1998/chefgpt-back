@@ -5,42 +5,68 @@ import {
   Redirect,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UserService } from "src/user/user.service";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "src/prisma/prisma.service";
 import type { KAKAOOauthRes, KAKAOUserRes } from "src/types/kakaologin";
-import { userInfo } from "os";
 
 @Injectable()
 export class KakaoService {
   constructor(
-    private readonly userService: UserService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService
   ) {}
 
   async kakaoLogin(code: string) {
     try {
-      // 1. 프론트에서 가져온 code로 access_token받기
-      const { accessToken, refreshToken } = await this.getAccessToken(code);
-      // 2. access_token으로 사용자 정보 조회
-      const userInfo = await this.getUserInfo(accessToken);
+      // 1. 프론트에서 가져온 code로 카카오사용자 정보 조회에 필요한 access_token받기
+      const { accessToken: KakaoAccessToken } = await this.getAccessToken(code);
+
+      // 2. access_token으로 카카오 사용자 정보 조회
+      const userInfo = await this.getUserInfo(KakaoAccessToken);
 
       // 3. DB에서 사용자 조회 또는 생성
-      // Todo
-      // 문제점: 초기 회원가입시 카카오에서 응답받은 id값을 초기이메일로 세팅해주고 있는데 ex) 1234523@temp.com
-      // 이러면 서비스 도중 회원가입을 수정했을 때 existingUser로 회원가입을 해야하는 유저인지 아닌지 분기처리를 할 수 없게됨
-
-      // Todo: schema 변동 필요
-      // const existingUser = await this.prisma.user.findOrCreateUser({});
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: userInfo.email },
+      });
 
       // 4. JWT 토큰 발급
+      // DB에 이메일이 없는 경우 즉 신규 카카오 회원가입인 유저
+      if (!existingUser) {
+        const newUser = await this.prisma.user.create({
+          data: {
+            email: userInfo.email,
+            nickname: userInfo.nickname,
+            thumbnail: userInfo.thumbnail,
+            password: null,
+            authProvider: "KAKAO",
+          },
+        });
 
+        const tokenMeta = { sub: newUser.id, email: newUser.email };
+        const accessToken = await this.jwtService.signAsync(tokenMeta);
+        const refreshToken = await this.jwtService.signAsync(tokenMeta, {
+          expiresIn: "7d",
+        });
+
+        const { password: _, ...safeUser } = newUser;
+
+        return { profile: safeUser, accessToken, refreshToken };
+      }
+
+      const { password: _, ...safeUser } = existingUser;
+      const tokenMeta = { sub: existingUser.id, email: existingUser.email };
+      const accessToken = await this.jwtService.signAsync(tokenMeta);
+      const refreshToken = await this.jwtService.signAsync(tokenMeta, {
+        expiresIn: "7d",
+      });
+
+      // DB에 이메일이 있는 경우 즉 기존에 카카오 로그인한 전적이 있는 유저
       return {
-        profile: userInfo, // Todo: 응답 타입을 변경시켜줘야함, 기본 이메일, 비밀번호 로그인과 타입을 같이 일치시켜줘야함
+        profile: safeUser, // Todo: 응답 타입을 변경시켜줘야함, 기본 이메일, 비밀번호 로그인과 타입을 같이 일치시켜줘야함
         accessToken,
         refreshToken,
       };
@@ -97,7 +123,7 @@ export class KakaoService {
         )
       );
       const userInfo = {
-        email: `${res.data.id}@temp.com`, // 사용자의 이메일 데이터는 biz앱으로 전환해야 수집할 수 있어서 임시 이메일을 초기에 설정
+        email: res.data.kakao_account.email,
         nickname: res.data.kakao_account.profile.nickname,
         thumbnail: res.data.kakao_account.profile.profile_image_url,
       };
