@@ -24,3 +24,11 @@ export const Option_Name = {
 } as const
 
 export type Option_Name = (typeof Option_Name)[keyof typeof Option_Name]
+
+
+export const AuthProvider = {
+  LOCAL: 'LOCAL',
+  KAKAO: 'KAKAO'
+} as const
+
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]

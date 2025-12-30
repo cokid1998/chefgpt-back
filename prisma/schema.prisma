@@ -19,13 +19,20 @@ enum Option_Name {
   B
 }
 
+enum AuthProvider {
+  LOCAL
+  KAKAO
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   email     String   @unique
-  password  String
+  password  String?
   nickname  String?
   thumbnail String?
+
+  authProvider AuthProvider
 
   // User와 Food의 관계
   foods Food[]

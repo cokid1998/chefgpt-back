@@ -17,6 +17,7 @@ async function main() {
       password: "1234",
       nickname: "이태관",
       thumbnail: "",
+      authProvider: "LOCAL",
     },
   });
 
