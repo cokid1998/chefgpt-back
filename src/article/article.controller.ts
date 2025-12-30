@@ -17,4 +17,10 @@ export class ArticleController {
   async findAllArticleCategory() {
     return this.articleService.findAllArticleCategory();
   }
+
+  @Get("count")
+  @ApiOperation({ summary: "요리 정보 아티클 개수" })
+  async articleCount() {
+    return this.articleService.articleCount();
+  }
 }

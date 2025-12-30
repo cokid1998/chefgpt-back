@@ -22,4 +22,10 @@ export class ArticleService {
     const categories = await this.prisma.article_Category.findMany();
     return categories;
   }
+
+  async articleCount() {
+    const count = await this.prisma.article.count();
+
+    return count;
+  }
 }
