@@ -6,8 +6,20 @@ export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAllArticle() {
-    const article = await this.prisma.article.findMany();
-
+    const article = await this.prisma.article.findMany({
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        content: true,
+        category: true,
+      },
+    });
     return article;
+  }
+
+  async findAllArticleCategory() {
+    const categories = await this.prisma.article_Category.findMany();
+    return categories;
   }
 }

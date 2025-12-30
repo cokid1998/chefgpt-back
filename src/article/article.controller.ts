@@ -11,4 +11,10 @@ export class ArticleController {
   async findAllArticle() {
     return this.articleService.findAllArticle();
   }
+
+  @Get("category")
+  @ApiOperation({ summary: "요리 정보 아티클 카테고리" })
+  async findAllArticleCategory() {
+    return this.articleService.findAllArticleCategory();
+  }
 }
