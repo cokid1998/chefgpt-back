@@ -19,7 +19,9 @@ export class ArticleService {
   }
 
   async findAllArticleCategory() {
-    const categories = await this.prisma.article_Category.findMany();
+    const categories = await this.prisma.article_Category.findMany({
+      orderBy: { id: "asc" },
+    });
     return categories;
   }
 
