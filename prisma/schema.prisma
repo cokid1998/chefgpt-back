@@ -101,6 +101,7 @@ model Article {
   summary     String?
   content     String
   readingTime Int
+  viewCount   Int     @default(0)
 
   // 외부키
   categoryId Int

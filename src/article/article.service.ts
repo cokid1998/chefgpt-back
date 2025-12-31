@@ -15,6 +15,7 @@ export class ArticleService {
         content: true,
         category: true,
         readingTime: true,
+        viewCount: true,
       },
     });
 
