@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
+import { getReadingTimeFromHTML } from "src/util/readingTime";
 
 @Injectable()
 export class ArticleService {
@@ -13,8 +14,10 @@ export class ArticleService {
         summary: true,
         content: true,
         category: true,
+        readingTime: true,
       },
     });
+
     return article;
   }
 

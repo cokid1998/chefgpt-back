@@ -96,10 +96,11 @@ model Vote_User {
 }
 
 model Article {
-  id      Int     @id @default(autoincrement())
-  title   String
-  summary String?
-  content String
+  id          Int     @id @default(autoincrement())
+  title       String
+  summary     String?
+  content     String
+  readingTime Int
 
   // 외부키
   categoryId Int
