@@ -50,4 +50,38 @@ export class ArticleService {
 
     return count;
   }
+
+  async findOneArticle(articleId: number) {
+    const articles = await this.prisma.article.findFirst({
+      where: {
+        id: articleId,
+      },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        content: true,
+        category: true,
+        readingTime: true,
+        viewCount: true,
+        createdAt: true,
+        articleTagRelations: {
+          select: {
+            tag: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const { articleTagRelations, ...formatArticle } = articles;
+
+    return {
+      ...formatArticle,
+      tags: articleTagRelations.map((at) => at.tag.name),
+    };
+  }
 }
