@@ -72,3 +72,13 @@ export type Article = Prisma.ArticleModel
  * 
  */
 export type Article_Category = Prisma.Article_CategoryModel
+/**
+ * Model Article_Tag
+ * 
+ */
+export type Article_Tag = Prisma.Article_TagModel
+/**
+ * Model Article_Tag_Relation
+ * 
+ */
+export type Article_Tag_Relation = Prisma.Article_Tag_RelationModel

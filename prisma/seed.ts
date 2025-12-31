@@ -176,10 +176,10 @@ async function main() {
   const [재료정보, 조리팁, 영양정보, 식품보관, 주방도구, 아티클기타] =
     articleCategory;
 
-  // 6. Article생성
-  const article = await prisma.article.createMany({
-    data: [
-      {
+  // 6. Article생성 (태그포함)
+  const articles = await Promise.all([
+    prisma.article.create({
+      data: {
         title: "갈색설탕과 흰설탕의 차이점",
         summary: "두 설탕의 성분, 맛, 용도 비교",
         content:
@@ -187,8 +187,30 @@ async function main() {
         categoryId: 재료정보.id,
         readingTime: 1,
         viewCount: 0,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "설탕" },
+                  create: { name: "설탕" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "베이킹" },
+                  create: { name: "베이킹" },
+                },
+              },
+            },
+          ],
+        },
       },
-      {
+    }),
+    prisma.article.create({
+      data: {
         title: "계란 계란말이를 완벽하게 만드는 법",
         summary: "계란말이의 기본 조리법과 팁",
         content:
@@ -196,8 +218,30 @@ async function main() {
         categoryId: 조리팁.id,
         readingTime: 1,
         viewCount: 1,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "계란" },
+                  create: { name: "계란" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "요리팁" },
+                  create: { name: "요리팁" },
+                },
+              },
+            },
+          ],
+        },
       },
-      {
+    }),
+    prisma.article.create({
+      data: {
         title: "시금치의 영양가와 일일 섭취량",
         summary: "시금치의 영양소 분석",
         content:
@@ -205,8 +249,30 @@ async function main() {
         categoryId: 영양정보.id,
         readingTime: 1,
         viewCount: 2,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "시금치" },
+                  create: { name: "시금치" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "영양정보" },
+                  create: { name: "영양정보" },
+                },
+              },
+            },
+          ],
+        },
       },
-      {
+    }),
+    prisma.article.create({
+      data: {
         title: "올리브유 보관 방법",
         summary: "올리브유의 올바른 보관법과 품질 유지",
         content:
@@ -214,8 +280,30 @@ async function main() {
         categoryId: 식품보관.id,
         readingTime: 1,
         viewCount: 3,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "올리브유" },
+                  create: { name: "올리브유" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "보관방법" },
+                  create: { name: "보관방법" },
+                },
+              },
+            },
+          ],
+        },
       },
-      {
+    }),
+    prisma.article.create({
+      data: {
         title: "칼 관리와 날 세우기",
         summary: "주방칼의 유지보수와 날카로움 유지법",
         content:
@@ -223,8 +311,30 @@ async function main() {
         categoryId: 주방도구.id,
         readingTime: 1,
         viewCount: 4,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "칼" },
+                  create: { name: "칼" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "주방도구" },
+                  create: { name: "주방도구" },
+                },
+              },
+            },
+          ],
+        },
       },
-      {
+    }),
+    prisma.article.create({
+      data: {
         title: "겨울철 식재료 보관 가이드",
         summary: "계절별 보관 방법",
         content:
@@ -232,9 +342,29 @@ async function main() {
         categoryId: 아티클기타.id,
         readingTime: 1,
         viewCount: 5,
+        articleTagRelations: {
+          create: [
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "겨울철" },
+                  create: { name: "겨울철" },
+                },
+              },
+            },
+            {
+              tag: {
+                connectOrCreate: {
+                  where: { name: "보관" },
+                  create: { name: "보관" },
+                },
+              },
+            },
+          ],
+        },
       },
-    ],
-  });
+    }),
+  ]);
 
   console.log("🌱Seed 데이터 생성 완료");
 }

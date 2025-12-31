@@ -107,6 +107,8 @@ model Article {
   categoryId Int
   category   Article_Category @relation(fields: [categoryId], references: [id])
 
+  articleTagRelations Article_Tag_Relation[]
+
   @@index([categoryId])
 }
 
@@ -116,4 +118,21 @@ model Article_Category {
 
   // Article관의 관계
   articles Article[]
+}
+
+model Article_Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  articleTagRelations Article_Tag_Relation[]
+}
+
+model Article_Tag_Relation {
+  articleId Int
+  tagId     Int
+
+  article Article     @relation(fields: [articleId], references: [id])
+  tag     Article_Tag @relation(fields: [tagId], references: [id])
+
+  @@id([articleId, tagId])
 }

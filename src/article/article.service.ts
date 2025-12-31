@@ -7,7 +7,7 @@ export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAllArticle() {
-    const article = await this.prisma.article.findMany({
+    const articles = await this.prisma.article.findMany({
       select: {
         id: true,
         title: true,
@@ -16,10 +16,26 @@ export class ArticleService {
         category: true,
         readingTime: true,
         viewCount: true,
+        articleTagRelations: {
+          select: {
+            tag: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return article;
+    const formatArticle = articles.map(
+      ({ articleTagRelations, ...article }) => ({
+        ...article,
+        tags: articleTagRelations.map((at) => at.tag.name),
+      })
+    );
+
+    return formatArticle;
   }
 
   async findAllArticleCategory() {
