@@ -96,12 +96,13 @@ model Vote_User {
 }
 
 model Article {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
   title       String
   summary     String?
   content     String
   readingTime Int
-  viewCount   Int     @default(0)
+  viewCount   Int      @default(0)
 
   // 외부키
   categoryId Int

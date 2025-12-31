@@ -16,6 +16,7 @@ export class ArticleService {
         category: true,
         readingTime: true,
         viewCount: true,
+        createdAt: true,
         articleTagRelations: {
           select: {
             tag: {
