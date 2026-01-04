@@ -100,7 +100,7 @@ model Article {
   createdAt   DateTime @default(now())
   title       String
   summary     String?
-  content     String
+  contentJSON String
   readingTime Int
   viewCount   Int      @default(0)
 
