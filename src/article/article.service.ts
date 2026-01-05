@@ -28,6 +28,7 @@ export class ArticleService {
           },
         },
       },
+      orderBy: { createdAt: "desc" },
     });
 
     const formatArticle = articles.map(
