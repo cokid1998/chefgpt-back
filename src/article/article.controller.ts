@@ -1,6 +1,14 @@
-import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { ArticleService } from "src/article/article.service";
+import { CreateArticleDto } from "src/article/dto/article.dto";
 
 @Controller("article")
 export class ArticleController {
@@ -28,5 +36,11 @@ export class ArticleController {
   @ApiOperation({ summary: "아티클 단건 조회" })
   async findOneArticle(@Param("articleId", ParseIntPipe) articleId: number) {
     return this.articleService.findOneArticle(articleId);
+  }
+
+  @Post("")
+  @ApiOperation({ summary: "요리 정보 아티클 생성" })
+  async createArticle(@Body() payload: CreateArticleDto) {
+    return this.articleService.createArticle(payload);
   }
 }
