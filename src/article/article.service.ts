@@ -145,4 +145,17 @@ export class ArticleService {
 
     return article;
   }
+
+  async incrementViewCount(articleId: number) {
+    const article = await this.prisma.article.update({
+      where: { id: articleId },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    return article;
+  }
 }

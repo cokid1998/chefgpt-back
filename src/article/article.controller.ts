@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
@@ -42,5 +43,13 @@ export class ArticleController {
   @ApiOperation({ summary: "요리 정보 아티클 생성" })
   async createArticle(@Body() payload: CreateArticleDto) {
     return this.articleService.createArticle(payload);
+  }
+
+  @Patch(":articleId")
+  @ApiOperation({ summary: "아티클 조회수 증가" })
+  async incrementViewCount(
+    @Param("articleId", ParseIntPipe) articleId: number
+  ) {
+    return this.articleService.incrementViewCount(articleId);
   }
 }
