@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { ArticleService } from "src/article/article.service";
@@ -17,8 +18,11 @@ export class ArticleController {
 
   @Get()
   @ApiOperation({ summary: "요리 정보 아티클" })
-  async findAllArticle() {
-    return this.articleService.findAllArticle();
+  async findAllArticle(
+    @Query("category") category?: string,
+    @Query("search") search?: string
+  ) {
+    return this.articleService.findAllArticle(category, search);
   }
 
   @Get("category")

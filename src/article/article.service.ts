@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { contains } from "class-validator";
+import { Prisma } from "prisma/generated/client";
 import { CreateArticleDto } from "src/article/dto/article.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { getReadingTimeFromText } from "src/util/readingTime";
@@ -7,8 +9,24 @@ import { getReadingTimeFromText } from "src/util/readingTime";
 export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllArticle() {
+  async findAllArticle(category: string, search: string) {
+    const where: Prisma.ArticleWhereInput = {};
+
+    if (category) {
+      where.category = {
+        name: category,
+      };
+    }
+
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: "insensitive",
+      };
+    }
+
     const articles = await this.prisma.article.findMany({
+      where,
       select: {
         id: true,
         title: true,
@@ -37,6 +55,8 @@ export class ArticleService {
         tags: articleTagRelations.map((at) => at.tag.name),
       })
     );
+
+    console.log(formatArticle);
 
     return formatArticle;
   }
