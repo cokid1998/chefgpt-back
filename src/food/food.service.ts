@@ -3,6 +3,8 @@ import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma } from "prisma/generated/client";
 import { parseUtcDate } from "src/util/date";
+import { ExpireType } from "src/food/food.controller";
+import dayjs from "dayjs";
 
 @Injectable()
 export class FoodService {
@@ -37,7 +39,12 @@ export class FoodService {
     return result;
   }
 
-  async findAllFood(userId: number, category: string, search: string) {
+  async findAllFood(
+    userId: number,
+    category: string,
+    search: string,
+    expire: ExpireType
+  ) {
     const where: Prisma.FoodWhereInput = { userId };
 
     if (category) {
@@ -51,6 +58,34 @@ export class FoodService {
         contains: search,
         mode: "insensitive",
       };
+    }
+
+    if (expire !== "ALL") {
+      const today = dayjs().startOf("day").toDate();
+      const sevenDaysLater = dayjs().startOf("day").add(7, "day").toDate();
+
+      if (expire === "EXPIRE") {
+        where.expiration_date = {
+          lt: today,
+        };
+      } else if (expire === "IMMINENT") {
+        where.AND = [
+          {
+            expiration_date: {
+              gte: today,
+            },
+          },
+          {
+            expiration_date: {
+              lt: sevenDaysLater,
+            },
+          },
+        ];
+      } else if (expire === "NORMAL") {
+        where.expiration_date = {
+          gte: sevenDaysLater,
+        };
+      }
     }
 
     const foods = await this.prisma.food.findMany({

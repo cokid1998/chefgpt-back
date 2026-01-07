@@ -18,6 +18,8 @@ import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { FoodService } from "src/food/food.service";
 
+export type ExpireType = "ALL" | "EXPIRE" | "IMMINENT" | "NORMAL";
+
 @Controller("food")
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
@@ -80,10 +82,11 @@ export class FoodController {
   findAllFood(
     @Req() req: Request & { user: { userId: number; email: string } },
     @Query("category") category?: string,
-    @Query("search") search?: string
+    @Query("search") search?: string,
+    @Query("expire") expire?: ExpireType
   ) {
     const { userId, email: _ } = req.user;
-    return this.foodService.findAllFood(userId, category, search);
+    return this.foodService.findAllFood(userId, category, search, expire);
   }
 
   @Get("count")
