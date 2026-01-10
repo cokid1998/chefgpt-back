@@ -7,6 +7,7 @@ import {
   Res,
   UseGuards,
   Request,
+  Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiBody } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
@@ -15,6 +16,7 @@ import { LocalAuthGuard } from "src/auth/guard/local-auth.guard";
 import { Response } from "express";
 import { AuthUser } from "src/auth/strategy/local.strategy";
 import { KakaoService } from "src/auth/kakao/kakao.service";
+import { Request as RequestType } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -139,5 +141,13 @@ export class AuthController {
     });
 
     return { profile, accessToken };
+  }
+
+  @Post("refresh")
+  @ApiOperation({ summary: "refreshToken으로 accessToken을 갱신시키는 API" })
+  async refreshAccessToken(@Req() request: RequestType) {
+    const { refreshToken } = request.cookies;
+
+    return this.authService.refreshAccessToken(refreshToken);
   }
 }

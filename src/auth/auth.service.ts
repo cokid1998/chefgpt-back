@@ -77,4 +77,13 @@ export class AuthService {
 
     return safeUser;
   }
+
+  // accessToken 갱신
+  async refreshAccessToken(refreshToken: string) {
+    const payload = await this.jwtService.verifyAsync(refreshToken, {
+      secret: process.env.JWT_SECRET,
+    });
+
+    console.log(payload.type);
+  }
 }
