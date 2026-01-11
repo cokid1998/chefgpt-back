@@ -25,12 +25,13 @@ enum AuthProvider {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  password  String?
-  nickname  String?
-  thumbnail String?
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  email        String   @unique
+  password     String?
+  nickname     String?
+  thumbnail    String?
+  refreshToken String?
 
   authProvider AuthProvider
 

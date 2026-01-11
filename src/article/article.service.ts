@@ -56,8 +56,6 @@ export class ArticleService {
       })
     );
 
-    console.log(formatArticle);
-
     return formatArticle;
   }
 

@@ -83,7 +83,5 @@ export class AuthService {
     const payload = await this.jwtService.verifyAsync(refreshToken, {
       secret: process.env.JWT_SECRET,
     });
-
-    console.log(payload.type);
   }
 }
