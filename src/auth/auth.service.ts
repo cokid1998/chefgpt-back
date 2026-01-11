@@ -4,6 +4,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
 import { UserService } from "src/user/user.service";
 import { AuthUser } from "src/auth/strategy/local.strategy";
+import bcrypt from "bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,12 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync(tokenMeta);
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
       expiresIn: "7d",
+    });
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: hashedRefreshToken },
     });
 
     return {
