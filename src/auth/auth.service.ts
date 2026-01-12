@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SignupDto } from "src/auth/dto/signup.dto";
@@ -87,8 +91,40 @@ export class AuthService {
 
   // accessToken 갱신
   async refreshAccessToken(refreshToken: string) {
+    // 1. JWT 검증
     const payload = await this.jwtService.verifyAsync(refreshToken, {
       secret: process.env.JWT_SECRET,
     });
+
+    // 2. DB에서 사용자 조회
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+
+    // 3. refeshToken 비교
+    const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
+
+    if (!isValid) {
+      throw new UnauthorizedException("유효하지않은 refeshToken");
+    }
+
+    // 4. 새로운 access Token 생성
+    const newAccessToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+      },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: "1m",
+      }
+    );
+
+    const { password, refreshToken: _, ...safeUser } = user;
+
+    return {
+      accessToken: newAccessToken,
+      profile: safeUser,
+    };
   }
 }
