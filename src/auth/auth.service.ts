@@ -9,6 +9,10 @@ import { SignupDto } from "src/auth/dto/signup.dto";
 import { UserService } from "src/user/user.service";
 import { AuthUser } from "src/auth/strategy/local.strategy";
 import bcrypt from "bcrypt";
+import {
+  ACCESS_TOKEN_EXPIRE,
+  REFRESH_TOKEN_EXPIRE,
+} from "src/constants/tokenOption";
 
 @Injectable()
 export class AuthService {
@@ -24,9 +28,13 @@ export class AuthService {
       email: user.email,
     };
 
-    const accessToken = await this.jwtService.signAsync(tokenMeta);
+    const accessToken = await this.jwtService.signAsync(tokenMeta, {
+      expiresIn: ACCESS_TOKEN_EXPIRE,
+      secret: process.env.JWT_ACCESS_SECRET,
+    });
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
-      expiresIn: "7d",
+      expiresIn: REFRESH_TOKEN_EXPIRE,
+      secret: process.env.JWT_REFRESH_SECRET,
     });
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
@@ -66,7 +74,7 @@ export class AuthService {
     const tokenMeta = { sub: newUser.id, email: payload.email };
     const accessToken = await this.jwtService.signAsync(tokenMeta);
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
-      expiresIn: "7d",
+      expiresIn: REFRESH_TOKEN_EXPIRE,
     });
     const { password: _, ...safeUser } = newUser;
 
@@ -93,7 +101,7 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string) {
     // 1. JWT 검증
     const payload = await this.jwtService.verifyAsync(refreshToken, {
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_REFRESH_SECRET,
     });
 
     // 2. DB에서 사용자 조회
@@ -115,8 +123,8 @@ export class AuthService {
         email: user.email,
       },
       {
-        secret: process.env.JWT_SECRET,
-        expiresIn: "1m",
+        secret: process.env.JWT_ACCESS_SECRET,
+        expiresIn: ACCESS_TOKEN_EXPIRE,
       }
     );
 

@@ -17,8 +17,6 @@ import { HttpModule } from "@nestjs/axios";
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         global: true,
-        secret: configService.get("JWT_SECRET"),
-        signOptions: { expiresIn: "1m" }, // Todo: 테스트를 위해 1분으로 수정 추후 변경
       }),
     }),
     UserModule,

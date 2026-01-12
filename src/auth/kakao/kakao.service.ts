@@ -10,6 +10,10 @@ import { firstValueFrom } from "rxjs";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "src/prisma/prisma.service";
 import type { KAKAOOauthRes, KAKAOUserRes } from "src/types/kakaologin";
+import {
+  ACCESS_TOKEN_EXPIRE,
+  REFRESH_TOKEN_EXPIRE,
+} from "src/constants/tokenOption";
 
 @Injectable()
 export class KakaoService {
@@ -47,9 +51,13 @@ export class KakaoService {
         });
 
         const tokenMeta = { sub: newUser.id, email: newUser.email };
-        const accessToken = await this.jwtService.signAsync(tokenMeta);
+        const accessToken = await this.jwtService.signAsync(tokenMeta, {
+          expiresIn: ACCESS_TOKEN_EXPIRE,
+          secret: process.env.JWT_ACCESS_SECRET,
+        });
         const refreshToken = await this.jwtService.signAsync(tokenMeta, {
-          expiresIn: "7d",
+          expiresIn: REFRESH_TOKEN_EXPIRE,
+          secret: process.env.JWT_REFRESH_SECRET,
         });
 
         const { password: _, ...safeUser } = newUser;
@@ -59,9 +67,13 @@ export class KakaoService {
 
       const { password: _, ...safeUser } = existingUser;
       const tokenMeta = { sub: existingUser.id, email: existingUser.email };
-      const accessToken = await this.jwtService.signAsync(tokenMeta);
+      const accessToken = await this.jwtService.signAsync(tokenMeta, {
+        expiresIn: ACCESS_TOKEN_EXPIRE,
+        secret: process.env.JWT_ACCESS_SECRET,
+      });
       const refreshToken = await this.jwtService.signAsync(tokenMeta, {
-        expiresIn: "7d",
+        expiresIn: REFRESH_TOKEN_EXPIRE,
+        secret: process.env.JWT_REFRESH_SECRET,
       });
 
       // DB에 이메일이 있는 경우 즉 기존에 카카오 로그인한 전적이 있는 유저
