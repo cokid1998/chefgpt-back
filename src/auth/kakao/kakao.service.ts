@@ -14,6 +14,7 @@ import {
   ACCESS_TOKEN_EXPIRE,
   REFRESH_TOKEN_EXPIRE,
 } from "src/constants/tokenOption";
+import bcrypt from "bcrypt";
 
 @Injectable()
 export class KakaoService {
@@ -59,6 +60,13 @@ export class KakaoService {
           expiresIn: REFRESH_TOKEN_EXPIRE,
           secret: process.env.JWT_REFRESH_SECRET,
         });
+        // DB에 저장하기 위한 refreshToken hash
+        const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+        await this.prisma.user.update({
+          where: { id: newUser.id },
+          data: { refreshToken: hashedRefreshToken },
+        });
 
         const { password: _, ...safeUser } = newUser;
 
@@ -74,6 +82,13 @@ export class KakaoService {
       const refreshToken = await this.jwtService.signAsync(tokenMeta, {
         expiresIn: REFRESH_TOKEN_EXPIRE,
         secret: process.env.JWT_REFRESH_SECRET,
+      });
+      // DB에 저장하기 위한 refreshToken hash
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+      await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: { refreshToken: hashedRefreshToken },
       });
 
       // DB에 이메일이 있는 경우 즉 기존에 카카오 로그인한 전적이 있는 유저
