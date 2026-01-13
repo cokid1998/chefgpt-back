@@ -1,23 +1,23 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "prisma/generated/client";
 import dayjs from "dayjs";
+import bcrypt from "bcrypt";
 
 const pool = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: pool });
 
 async function main() {
-  // await prisma.user.deleteMany();
-  // await prisma.food.deleteMany();
-  // await prisma.category.deleteMany();
+  const hashedPassword = await bcrypt.hash("1234", 10);
 
   // 1. 유저 생성
   const user = await prisma.user.create({
     data: {
       email: "test@naver.com",
-      password: "1234",
+      password: hashedPassword,
       nickname: "이태관",
       thumbnail: "",
       authProvider: "LOCAL",
+      refreshToken: null,
     },
   });
 
