@@ -81,6 +81,13 @@ export class AuthService {
       expiresIn: REFRESH_TOKEN_EXPIRE,
       secret: process.env.JWT_REFRESH_SECRET,
     });
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    await this.prisma.user.update({
+      where: { id: newUser.id },
+      data: { refreshToken: hashedRefreshToken },
+    });
+
     const { password: _, ...safeUser } = newUser;
 
     return { profile: safeUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
