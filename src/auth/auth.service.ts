@@ -93,7 +93,9 @@ export class AuthService {
       throw new BadRequestException("존재하지 않는 회원입니다.");
     }
 
-    if (user.password !== password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       throw new BadRequestException("비밀번호를 확인해주세요");
     }
 
