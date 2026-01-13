@@ -60,21 +60,26 @@ export class AuthService {
     if (existingUser) {
       throw new BadRequestException("이미 가입된 이메일 입니다.");
     }
+    const hashedPassword = await bcrypt.hash(payload.password, 10);
     // db에 추가
     const newUser = await this.prisma.user.create({
       data: {
         email: payload.email,
         nickname: "test", // Todo: 랜덤닉네임
         thumbnail: "",
-        password: payload.password, // Todo: 암호화
+        password: hashedPassword,
         authProvider: "LOCAL",
       },
     });
 
     const tokenMeta = { sub: newUser.id, email: payload.email };
-    const accessToken = await this.jwtService.signAsync(tokenMeta);
+    const accessToken = await this.jwtService.signAsync(tokenMeta, {
+      expiresIn: ACCESS_TOKEN_EXPIRE,
+      secret: process.env.JWT_ACCESS_SECRET,
+    });
     const refreshToken = await this.jwtService.signAsync(tokenMeta, {
       expiresIn: REFRESH_TOKEN_EXPIRE,
+      secret: process.env.JWT_REFRESH_SECRET,
     });
     const { password: _, ...safeUser } = newUser;
 
