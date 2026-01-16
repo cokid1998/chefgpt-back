@@ -3,7 +3,7 @@ import { Innertube } from "youtubei.js";
 import OpenAI from "openai";
 
 @Injectable()
-export class YoutubeService {
+export class RecipeService {
   private readonly openAI: OpenAI;
 
   constructor() {

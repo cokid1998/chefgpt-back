@@ -6,7 +6,7 @@ import { PrismaModule } from "src/prisma/prisma.module";
 import { FoodModule } from "./food/food.module";
 import { VoteModule } from "./vote/vote.module";
 import { ArticleModule } from "./article/article.module";
-import { YoutubeModule } from "src/youtube/youtube.module";
+import { RecipeModule } from "src/recipe/recipe.module";
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { YoutubeModule } from "src/youtube/youtube.module";
     FoodModule,
     VoteModule,
     ArticleModule,
-    YoutubeModule,
+    RecipeModule,
   ],
   controllers: [],
   providers: [],
