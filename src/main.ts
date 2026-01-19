@@ -22,7 +22,7 @@ async function bootstrap() {
         bearerFormat: "JWT",
         description: "JWT 토큰을 입력하세요",
       },
-      "access-token"
+      "access-token",
     )
     .build();
 
@@ -36,7 +36,7 @@ async function bootstrap() {
   SwaggerModule.setup("api", app, documentFactory);
 
   app.enableCors({
-    origin: "http://localhost:5173", // Todo: env로 가져오기
+    origin: ["http://localhost:5173", "https://chefgpt-front.vercel.app"],
     credentials: true,
   });
 

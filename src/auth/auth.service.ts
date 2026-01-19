@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   async login(user: AuthUser) {
@@ -90,7 +90,7 @@ export class AuthService {
 
     const { password: _, ...safeUser } = newUser;
 
-    return { profile: safeUser, accessToken, refreshToken }; // Todo: 토큰반환해서 프론트에서 회원가입 완료되면 바로 로그인상태로 변경하도록
+    return { profile: safeUser, accessToken, refreshToken };
   }
 
   async validateUser(email: string, password: string) {
@@ -139,7 +139,7 @@ export class AuthService {
       {
         secret: process.env.JWT_ACCESS_SECRET,
         expiresIn: ACCESS_TOKEN_EXPIRE,
-      }
+      },
     );
 
     const { password, refreshToken: _, ...safeUser } = user;
