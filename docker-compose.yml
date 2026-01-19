@@ -42,9 +42,9 @@ services:
     command: >
       sh -c "
         echo 'prisma 스키마 세팅...⚙️' && 
-        npm run prisma:migrate && 
+        npx prisma migrate dev && 
         echo 'seed 데이터 생성 시작...🌱' &&
-        npm run prisma:seed &&
+        npx prisma db seed &&
         echo '서버시작...🚀' && 
         npm run dev
       "
