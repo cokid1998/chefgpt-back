@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Innertube } from "youtubei.js";
+// import { Innertube } from "youtubei.js";
 import OpenAI from "openai";
 
 @Injectable()
@@ -14,6 +14,8 @@ export class RecipeService {
 
   async getScript(youtubeUrl: string) {
     const videoId = await this.extractVideoId(youtubeUrl);
+
+    const { Innertube } = await import("youtubei.js");
 
     const youtube = await Innertube.create({
       generate_session_locally: true,
@@ -130,7 +132,7 @@ export class RecipeService {
 
   private async extractVideoId(url: string): Promise<string> {
     const match = url.match(
-      /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     );
 
     if (!match) {
