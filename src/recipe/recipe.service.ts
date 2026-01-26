@@ -13,30 +13,39 @@ export class RecipeService {
   }
 
   async getScript(youtubeUrl: string) {
-    const videoId = await this.extractVideoId(youtubeUrl);
+    // const videoId = await this.extractVideoId(youtubeUrl);
 
-    const { Innertube } = await import("youtubei.js");
+    // const { Innertube } = await import("youtubei.js");
 
-    const youtube = await Innertube.create({
-      generate_session_locally: true,
-      lang: "ko",
-      location: "ko",
-      retrieve_player: false,
+    // const youtube = await Innertube.create({
+    //   generate_session_locally: true,
+    //   lang: "ko",
+    //   location: "ko",
+    //   retrieve_player: false,
+    // });
+
+    // // 1. 기본 정보 가져오기 (캡션 포함)
+    // const info = await youtube.getBasicInfo(videoId);
+    // const captionTracks = info.captions?.caption_tracks;
+
+    // const res = await fetch(captionTracks[0].base_url);
+
+    // const xml = await res.text();
+
+    // const scriptArray = this.xmlToArray(xml);
+
+    // const scriptSummary = this.scriptSummaryFromOpenAI(scriptArray);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          "양파를 썰어서 냄비 바닥에 깔아주고",
+          "두부를 썰어서 올려 주세요",
+          "물 400mm, 고춧가루, 다진마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 5분 동안 끓여 주세요",
+          "마지막에 대파랑 청양고추 넣어서 분만 더 끓이면 완성",
+        ]);
+      }, 500);
     });
-
-    // 1. 기본 정보 가져오기 (캡션 포함)
-    const info = await youtube.getBasicInfo(videoId);
-    const captionTracks = info.captions?.caption_tracks;
-
-    const res = await fetch(captionTracks[0].base_url);
-
-    const xml = await res.text();
-
-    const scriptArray = this.xmlToArray(xml);
-
-    const scriptSummary = this.scriptSummaryFromOpenAI(scriptArray);
-
-    return scriptSummary;
   }
 
   async scriptSummaryFromOpenAI(scriptArray: string[]) {
