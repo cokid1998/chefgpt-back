@@ -7,6 +7,6 @@ export class RecipeController {
 
   @Get()
   async getScript(@Query("youtubeUrl") url: string) {
-    return this.recipeService.getScript(url);
+    return this.recipeService.getRecipeInfo(url);
   }
 }
