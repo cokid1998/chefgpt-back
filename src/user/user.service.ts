@@ -6,7 +6,7 @@ import { BadRequestException } from "@nestjs/common";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getProfile(id: number) {
+  async patchUserInfo(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: Number(id) },
     });
