@@ -8,4 +8,8 @@ export class UpdateUserInfoDto {
   @IsString()
   @IsOptional()
   thumbnail: string;
+
+  @IsString()
+  @IsOptional()
+  password: string;
 }
