@@ -1,16 +1,17 @@
 import {
   Body,
   Controller,
-  Get,
-  Param,
   Patch,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiConsumes } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { UpdateUserInfoDto } from "src/user/dto/user.dto";
 import { UserService } from "src/user/user.service";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("user")
 export class UserController {
@@ -19,18 +20,21 @@ export class UserController {
   @Patch()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
+  @UseInterceptors(FileInterceptor("thumbnailImageFile"))
+  @ApiConsumes("multipart/form-data")
   @ApiOperation({
     summary: "유저정보 수정",
   })
   patchUserInfo(
     @Req() req: Request & { user: { userId: number; email: string } },
     @Body() payload: UpdateUserInfoDto,
+    @UploadedFile() thumbnailImageFile?: Express.Multer.File,
   ) {
     const { userId } = req.user;
-    // Todo: 이미지 파일을 어떤 순서로 처리할지 정해야함
-    // 1. 프론트에서 storage에 저장하고 그 url을 서버로 보내는 방법
-    // 2. 프론트에서 formdata를 서버에 보내고 서버에서 storage에 저장하고 프론트에 storage에 썸네일 url을 전달해주는 방법
-    console.log(payload);
-    return this.userService.patchUserInfo(userId);
+    // 1. 유저가 유효한지 체크
+    // 2. supabase Storage에 썸네일 사진 저장
+    // 3. 썸네일 사진 url DB에 저장
+
+    return this.userService.patchUserInfo(userId, payload, thumbnailImageFile);
   }
 }
