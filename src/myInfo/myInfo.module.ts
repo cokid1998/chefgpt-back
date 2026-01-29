@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { MyInfoController } from "src/myInfo/myInfo.controller";
-import { MyinfoService } from "src/myInfo/myinfo.service";
+import { MyInfoService } from "src/myInfo/myInfo.service";
 
 @Module({
-  providers: [MyinfoService],
+  providers: [MyInfoService],
   controllers: [MyInfoController],
 })
 export class MyInfoModule {}

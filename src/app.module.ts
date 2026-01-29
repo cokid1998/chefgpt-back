@@ -7,7 +7,7 @@ import { FoodModule } from "./food/food.module";
 import { VoteModule } from "./vote/vote.module";
 import { ArticleModule } from "./article/article.module";
 import { RecipeModule } from "src/recipe/recipe.module";
-import { MyInfoModule } from "src/myInfo/myinfo.module";
+import { MyInfoModule } from "src/myInfo/myInfo.module";
 
 @Module({
   imports: [

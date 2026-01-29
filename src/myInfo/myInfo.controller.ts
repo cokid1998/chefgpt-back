@@ -1,11 +1,11 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
-import { MyinfoService } from "src/myInfo/myinfo.service";
+import { MyInfoService } from "src/myInfo/myInfo.service";
 
 @Controller("myinfo")
 export class MyInfoController {
-  constructor(private readonly MyinfoService: MyinfoService) {}
+  constructor(private readonly MyinfoService: MyInfoService) {}
 
   @Get("count")
   @UseGuards(JwtAuthGuard)
