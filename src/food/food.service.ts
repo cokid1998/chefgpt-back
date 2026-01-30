@@ -11,7 +11,7 @@ export class FoodService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findCategory() {
-    const categories = await this.prisma.category.findMany();
+    const categories = await this.prisma.food_Category.findMany();
     return categories;
   }
 

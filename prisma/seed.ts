@@ -23,14 +23,14 @@ async function main() {
 
   // 2. 카테고리 생성
   const categories = await Promise.all([
-    prisma.category.create({ data: { name: "채소" } }),
-    prisma.category.create({ data: { name: "육류" } }),
-    prisma.category.create({ data: { name: "유제품" } }),
-    prisma.category.create({ data: { name: "해산물" } }),
-    prisma.category.create({ data: { name: "과일" } }),
-    prisma.category.create({ data: { name: "조미료" } }),
-    prisma.category.create({ data: { name: "곡물" } }),
-    prisma.category.create({ data: { name: "기타" } }),
+    prisma.food_Category.create({ data: { name: "채소" } }),
+    prisma.food_Category.create({ data: { name: "육류" } }),
+    prisma.food_Category.create({ data: { name: "유제품" } }),
+    prisma.food_Category.create({ data: { name: "해산물" } }),
+    prisma.food_Category.create({ data: { name: "과일" } }),
+    prisma.food_Category.create({ data: { name: "조미료" } }),
+    prisma.food_Category.create({ data: { name: "곡물" } }),
+    prisma.food_Category.create({ data: { name: "기타" } }),
   ]);
 
   const [채소, 육류, 유제품, 해산물, 과일, 조미료, 곡물, 기타] = categories;
