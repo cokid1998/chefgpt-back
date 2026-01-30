@@ -37,7 +37,7 @@ export class RecipeService {
     const scriptArray = this.xmlToArray(xml);
     console.log("scriptArray: ", scriptArray);
 
-    const scriptSummary = this.scriptSummaryFromOpenAI(scriptArray);
+    const scriptSummary = this.youtubeScriptSummaryFromOpenAI(scriptArray);
     console.log("scriptSummary: ", scriptSummary);
 
     return scriptSummary;
@@ -89,7 +89,7 @@ export class RecipeService {
     // });
   }
 
-  async scriptSummaryFromOpenAI(scriptArray: string[]) {
+  async youtubeScriptSummaryFromOpenAI(scriptArray: string[]) {
     // 만약 요리관련 정보가 아니라면 에러를 던진다거나 해서 프론트에 알려줘야함
     const prompt = `
       너는 YouTube 요리 영상 자막을 분석하여

@@ -6,7 +6,7 @@ export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @Get()
-  async getScript(@Query("youtubeUrl") url: string) {
+  async getRecipeInfo(@Query("youtubeUrl") url: string) {
     return this.recipeService.getRecipeInfo(url);
   }
 }
