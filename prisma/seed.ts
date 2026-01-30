@@ -362,13 +362,13 @@ async function main() {
 
   // 7. Recipe_Category생성
   const recipeCategory = await Promise.all([
-    prisma.article_Category.create({ data: { name: "한식" } }),
-    prisma.article_Category.create({ data: { name: "양식" } }),
-    prisma.article_Category.create({ data: { name: "중식" } }),
-    prisma.article_Category.create({ data: { name: "일식" } }),
-    prisma.article_Category.create({ data: { name: "디저트" } }),
-    prisma.article_Category.create({ data: { name: "음료" } }),
-    prisma.article_Category.create({ data: { name: "기타" } }),
+    prisma.recipe_Category.create({ data: { name: "한식" } }),
+    prisma.recipe_Category.create({ data: { name: "양식" } }),
+    prisma.recipe_Category.create({ data: { name: "중식" } }),
+    prisma.recipe_Category.create({ data: { name: "일식" } }),
+    prisma.recipe_Category.create({ data: { name: "디저트" } }),
+    prisma.recipe_Category.create({ data: { name: "음료" } }),
+    prisma.recipe_Category.create({ data: { name: "기타" } }),
   ]);
 
   const [한식, 양식, 중식, 일식, 디저트, 음료, 레시피기타] = recipeCategory;
@@ -417,8 +417,8 @@ async function main() {
               stepNumber: 3,
               stepTitle: "물 넣고 끓이기",
               description:
-                "물을 재료가 잠길 정도로 붓고 강불에서 끓여주세요. 끓어오르면 중약불로 줄이고 10분간 더 끓여주세요.",
-              tip: null,
+                "물을 재료가 잠길 정도로 붓고 강불에서 끓여주₩세요. 끓어오르면 중약불로 줄이고 10분간 더 끓여주세요.",
+              tip: "물의 양은 김치의 간에 따라 조절해주세요",
             },
             {
               stepNumber: 4,
@@ -431,7 +431,7 @@ async function main() {
               stepNumber: 5,
               stepTitle: "완성",
               description: "불을 끄고 그릇에 담아 따뜻하게 드세요.",
-              tip: null,
+              tip: "뜨거우니 화상을 조심하세요!",
             },
           ],
         },
