@@ -106,7 +106,7 @@ export class RecipeService {
         "category": string,
         "title": string,
         "description": string,
-        "cookingTime": string,
+        "cookingTime": number,
         "ingredients": {
           "name": string,
           "amount": string
@@ -218,6 +218,9 @@ export class RecipeService {
         - 영상에 없는 정보는 추가하지 마라.
 
       - cookingTime
+        - 전체 조리 시간을 "분 단위 숫자(Number)"로 작성한다.
+        - 최소 1부터 시작한다.
+        - 단위(분, 분 정도 등)는 절대 포함하지 마라.
         - 자막에 등장한 시간 정보를 기준으로 전체 조리 시간을 작성한다.
         - 알 수 없으면 "시간 정보 없음"으로 작성한다.
 
