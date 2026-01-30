@@ -112,6 +112,7 @@ export class RecipeService {
           "amount": string
         }[],
         "steps": {
+          "stepNumber": number,
           "stepTitle": string,
           "description": string,
           "tip": string
@@ -153,6 +154,15 @@ export class RecipeService {
           - "약간"
       - 조리 과정에서 반복 언급된 재료는 하나로 통합한다.
       - 양념과 기본 조미료도 요리에 사용되었다면 포함한다.
+
+      ────────────────────────
+      [steps.stepNumber 작성 규칙]
+      ────────────────────────
+
+      - 각 step에는 반드시 stepNumber를 포함해야 한다.
+      - stepNumber는 조리 순서를 나타내는 숫자다.
+      - 첫 번째 단계는 1, 두 번째 단계는 2, 세 번째는 3... 순서대로 부여한다.
+      - stepNumber는 반드시 1부터 시작하여 순차적으로 증가해야 한다.
 
       ────────────────────────
       [steps.tip 작성 규칙 — 최우선]
