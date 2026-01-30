@@ -360,6 +360,85 @@ async function main() {
     }),
   ]);
 
+  // 7. Recipe_Category생성
+  const recipeCategory = await Promise.all([
+    prisma.article_Category.create({ data: { name: "한식" } }),
+    prisma.article_Category.create({ data: { name: "양식" } }),
+    prisma.article_Category.create({ data: { name: "중식" } }),
+    prisma.article_Category.create({ data: { name: "일식" } }),
+    prisma.article_Category.create({ data: { name: "디저트" } }),
+    prisma.article_Category.create({ data: { name: "음료" } }),
+    prisma.article_Category.create({ data: { name: "기타" } }),
+  ]);
+
+  const [한식, 양식, 중식, 일식, 디저트, 음료, 레시피기타] = recipeCategory;
+
+  // 8. Recipe생성
+  const recipe = await Promise.all([
+    prisma.recipe.create({
+      data: {
+        userId: user.id,
+        categoryId: 한식.id,
+        title: "김치찌개",
+        description: "얼큰하고 시원한 국물 맛이 일품인 김치찌개입니다.",
+        cookingTime: 30,
+
+        recipeIngredients: {
+          create: [
+            { name: "배추김치", amount: "300g" },
+            { name: "돼지고기", amount: "200g" },
+            { name: "두부", amount: "1모" },
+            { name: "대파", amount: "1대" },
+            { name: "양파", amount: "1/2개" },
+            { name: "고춧가루", amount: "1큰술" },
+            { name: "다진 마늘", amount: "1큰술" },
+            { name: "설탕", amount: "1작은술" },
+            { name: "참기름", amount: "약간" },
+          ],
+        },
+
+        recipeSteps: {
+          create: [
+            {
+              stepNumber: 1,
+              stepTitle: "재료 준비",
+              description:
+                "김치는 한입 크기로 썰고, 돼지고기도 먹기 좋은 크기로 썰어주세요. 두부는 깍둑썰기하고, 대파와 양파는 채썰어주세요.",
+              tip: "신김치를 사용하면 더 깊은 맛이 나요.",
+            },
+            {
+              stepNumber: 2,
+              stepTitle: "김치 볶기",
+              description:
+                "냄비에 참기름을 두르고 김치와 돼지고기를 중불에서 3-5분간 볶아주세요. 고춧가루와 다진 마늘을 넣고 함께 볶아주세요.",
+              tip: "김치를 충분히 볶아야 누린내가 없어져요.",
+            },
+            {
+              stepNumber: 3,
+              stepTitle: "물 넣고 끓이기",
+              description:
+                "물을 재료가 잠길 정도로 붓고 강불에서 끓여주세요. 끓어오르면 중약불로 줄이고 10분간 더 끓여주세요.",
+              tip: null,
+            },
+            {
+              stepNumber: 4,
+              stepTitle: "두부와 야채 추가",
+              description:
+                "두부, 양파, 대파를 넣고 5분간 더 끓여주세요. 설탕으로 간을 맞춰주세요.",
+              tip: "두부는 너무 일찍 넣으면 부서지니 마지막에 넣어주세요.",
+            },
+            {
+              stepNumber: 5,
+              stepTitle: "완성",
+              description: "불을 끄고 그릇에 담아 따뜻하게 드세요.",
+              tip: null,
+            },
+          ],
+        },
+      },
+    }),
+  ]);
+
   console.log("🌱Seed 데이터 생성 완료");
 }
 

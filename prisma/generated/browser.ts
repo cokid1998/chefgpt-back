@@ -62,3 +62,23 @@ export type Article_Tag = Prisma.Article_TagModel
  * 
  */
 export type Article_Tag_Relation = Prisma.Article_Tag_RelationModel
+/**
+ * Model Recipe
+ * 
+ */
+export type Recipe = Prisma.RecipeModel
+/**
+ * Model Recipe_Ingredient
+ * 
+ */
+export type Recipe_Ingredient = Prisma.Recipe_IngredientModel
+/**
+ * Model Recipe_Step
+ * 
+ */
+export type Recipe_Step = Prisma.Recipe_StepModel
+/**
+ * Model Recipe_Category
+ * 
+ */
+export type Recipe_Category = Prisma.Recipe_CategoryModel
