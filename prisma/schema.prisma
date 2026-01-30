@@ -44,11 +44,11 @@ model User {
   recipes Recipe[]
 }
 
-model Category {
+model Food_Category {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  // Category와 Food의 관계
+  // Food_Category와 Food의 관계
   foods Food[]
 }
 
@@ -65,7 +65,7 @@ model Food {
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Food_Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
   @@index([userId])
