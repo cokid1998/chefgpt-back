@@ -5,8 +5,9 @@ import { RecipeService } from "./recipe.service";
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
-  @Get()
-  async getRecipeInfo(@Query("youtubeUrl") url: string) {
-    return this.recipeService.getRecipeInfo(url);
+  @Get("youtube-script")
+  async getYoutubeRecipeScript(@Query("youtubeUrl") url: string) {
+    return this.recipeService.getYoutubeRecipeScript(url);
+  }
   }
 }

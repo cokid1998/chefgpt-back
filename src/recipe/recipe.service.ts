@@ -1,18 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
+import { PrismaService } from "src/prisma/prisma.service";
 // import { Innertube } from "youtubei.js";
 
 @Injectable()
 export class RecipeService {
   private readonly openAI: OpenAI;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     this.openAI = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
 
-  async getRecipeInfo(youtubeUrl: string) {
+  async getYoutubeRecipeScript(youtubeUrl: string) {
     const videoId = await this.extractVideoId(youtubeUrl);
 
     const { Innertube } = await import("youtubei.js");
