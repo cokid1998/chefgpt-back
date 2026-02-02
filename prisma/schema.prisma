@@ -41,7 +41,8 @@ model User {
   voteUsers Vote_User[]
 
   // User와 Recipe의 관계
-  recipes Recipe[]
+  recipes     Recipe[]
+  recipeLikes Recipe_Like[]
 }
 
 model Food_Category {
@@ -82,7 +83,8 @@ model Vote {
   endDate     DateTime
 
   // Vote와 User의 관계
-  voteUsers Vote_User[]
+  voteUsers   Vote_User[]
+  recipeLikes Recipe_Like[]
 }
 
 model Vote_User {
@@ -181,4 +183,16 @@ model Recipe_Category {
   id      Int      @id @default(autoincrement())
   name    String
   recipes Recipe[]
+}
+
+model Recipe_Like {
+  id       Int @id @default(autoincrement())
+  recipeId Int
+  userId   Int
+
+  vote Vote @relation(fields: [recipeId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  // 동일한 userId는 동일한 recipeId를 여러개 가질 수 없음
+  @@unique([recipeId, userId])
 }

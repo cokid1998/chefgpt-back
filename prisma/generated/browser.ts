@@ -82,3 +82,8 @@ export type Recipe_Step = Prisma.Recipe_StepModel
  * 
  */
 export type Recipe_Category = Prisma.Recipe_CategoryModel
+/**
+ * Model Recipe_Like
+ * 
+ */
+export type Recipe_Like = Prisma.Recipe_LikeModel
