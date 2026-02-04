@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
 import { PrismaService } from "src/prisma/prisma.service";
+import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 // import { Innertube } from "youtubei.js";
 
 @Injectable()
@@ -317,6 +318,29 @@ export class RecipeService {
     const category = await this.prisma.recipe_Category.findMany();
 
     return category;
+  }
+
+  async createRecipe(userId: number, payload: CreateRecipeDto) {
+    const { ingredients, steps, categoryId, ...recipeData } = payload;
+    const recipe = await this.prisma.recipe.create({
+      data: {
+        ...recipeData,
+        user: {
+          connect: { id: userId },
+        },
+        category: {
+          connect: { id: categoryId },
+        },
+        recipeIngredients: {
+          create: ingredients,
+        },
+        recipeSteps: {
+          create: steps,
+        },
+      },
+    });
+
+    return recipe;
   }
 
   async findOneRecipe(recipeId: number) {

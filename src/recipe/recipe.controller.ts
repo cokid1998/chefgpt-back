@@ -1,7 +1,18 @@
-import { Get, Controller, Query, UseGuards, Req } from "@nestjs/common";
+import {
+  Get,
+  Controller,
+  Query,
+  Post,
+  UseGuards,
+  Req,
+  UsePipes,
+  ValidationPipe,
+  Body,
+} from "@nestjs/common";
 import { RecipeService } from "./recipe.service";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 
 @Controller("recipe")
 export class RecipeController {
@@ -32,6 +43,22 @@ export class RecipeController {
   })
   async getRecipeCategory() {
     return this.recipeService.getRecipeCategory();
+  }
+
+  @Post("")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: "레시피 생성",
+  })
+  async createRecipe(
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Body() payload: CreateRecipeDto,
+  ) {
+    const { userId } = req.user;
+
+    return this.recipeService.createRecipe(userId, payload);
   }
 
   @Get(":recipeId")
