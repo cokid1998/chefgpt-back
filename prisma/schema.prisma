@@ -147,7 +147,7 @@ model Recipe {
   id                Int                 @id @default(autoincrement())
   title             String
   description       String
-  cookingTime       Int
+  cookingTime       String?
   recipeIngredients Recipe_Ingredient[]
   recipeSteps       Recipe_Step[]
   viewCount         Int                 @default(0)
@@ -169,11 +169,11 @@ model Recipe_Ingredient {
 }
 
 model Recipe_Step {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   stepNumber  Int
   stepTitle   String
   description String
-  tip         String
+  tip         String?
 
   recipeId Int
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)

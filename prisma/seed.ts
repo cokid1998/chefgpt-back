@@ -381,7 +381,7 @@ async function main() {
         categoryId: 한식.id,
         title: "김치찌개",
         description: "얼큰하고 시원한 국물 맛이 일품인 김치찌개입니다.",
-        cookingTime: 30,
+        cookingTime: "30분",
 
         recipeIngredients: {
           create: [
