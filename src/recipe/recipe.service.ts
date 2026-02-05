@@ -15,20 +15,22 @@ export class RecipeService {
   }
 
   async getYoutubeRecipeScript(youtubeUrl: string) {
-    // const videoId = await this.extractVideoId(youtubeUrl);
+    const videoId = this.extractVideoId(youtubeUrl);
 
-    // const { Innertube } = await import("youtubei.js");
+    const { Innertube } = await import("youtubei.js");
 
-    // const youtube = await Innertube.create({
-    //   generate_session_locally: true,
-    //   lang: "ko",
-    //   location: "ko",
-    //   retrieve_player: false,
-    // });
+    const youtube = await Innertube.create({
+      generate_session_locally: true,
+      lang: "ko",
+      location: "ko",
+      retrieve_player: false,
+    });
 
     // Todo: 간헐적 혹은 요청을 많이하면 caption_tracks가 응답으로 나오지않음...
-    // const info = await youtube.getBasicInfo(videoId);
-    // console.log("info: ", info);
+    // 정확한 원인은 모르겠지만 caption관련 데이터를 유튜브가 이제 응답해주지 않는거같음.
+    // 따라서 caption에서 추출한 데이터를 short_description를 이용해서 자막 데이터를 추출하도록 수정
+    const info = await youtube.getBasicInfo(videoId);
+    console.log("info: ", info.basic_info.short_description);
 
     // const res = await fetch(info.captions.caption_tracks[0].base_url);
     // console.log("res: ", res);
@@ -39,59 +41,62 @@ export class RecipeService {
     // const scriptArray = this.xmlToArray(xml);
     // console.log("scriptArray: ", scriptArray);
 
-    // const scriptSummary = this.youtubeScriptSummaryFromOpenAI(scriptArray);
-    // console.log("scriptSummary: ", scriptSummary);
+    const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
+      info.basic_info.short_description,
+    );
 
-    // return scriptSummary;
+    console.log(scriptSummary);
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          category: "양식",
-          ingredients: [
-            { name: "스파게티", amount: "200g" },
-            { name: "마늘", amount: "5쪽" },
-            { name: "올리브 오일", amount: "3큰술" },
-            { name: "고추", amount: "1개" },
-            { name: "파슬리", amount: "약간" },
-            { name: "소금", amount: "적당량" },
-            { name: "후추", amount: "적당량" },
-          ],
-          title: "스파게티 알리오 올리오",
-          description:
-            "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
-          cookingTime: "20분",
-          steps: [
-            {
-              stepTitle: "양파 손질",
-              description:
-                "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
-              tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
-            },
-            {
-              stepTitle: "두부 준비",
-              description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
-              tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
-            },
-            {
-              stepTitle: "양념 끓이기",
-              description:
-                "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
-              tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
-            },
-            {
-              stepTitle: "마무리",
-              description:
-                "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
-              tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
-            },
-          ],
-        });
-      }, 500);
-    });
+    return scriptSummary;
+
+    // return new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     resolve({
+    //       category: "양식",
+    //       ingredients: [
+    //         { name: "스파게티", amount: "200g" },
+    //         { name: "마늘", amount: "5쪽" },
+    //         { name: "올리브 오일", amount: "3큰술" },
+    //         { name: "고추", amount: "1개" },
+    //         { name: "파슬리", amount: "약간" },
+    //         { name: "소금", amount: "적당량" },
+    //         { name: "후추", amount: "적당량" },
+    //       ],
+    //       title: "스파게티 알리오 올리오",
+    //       description:
+    //         "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
+    //       cookingTime: "20분",
+    //       steps: [
+    //         {
+    //           stepTitle: "양파 손질",
+    //           description:
+    //             "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
+    //           tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
+    //         },
+    //         {
+    //           stepTitle: "두부 준비",
+    //           description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
+    //           tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
+    //         },
+    //         {
+    //           stepTitle: "양념 끓이기",
+    //           description:
+    //             "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
+    //           tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
+    //         },
+    //         {
+    //           stepTitle: "마무리",
+    //           description:
+    //             "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
+    //           tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
+    //         },
+    //       ],
+    //     });
+    //   }, 500);
+    // });
   }
 
-  async youtubeScriptSummaryFromOpenAI(scriptArray: string[]) {
+  async youtubeScriptSummaryFromOpenAI(scriptArray: string) {
     // 만약 요리관련 정보가 아니라면 에러를 던진다거나 해서 프론트에 알려줘야함
     const prompt = `
       너는 YouTube 요리 영상 자막을 분석하여
@@ -108,7 +113,7 @@ export class RecipeService {
         "category": string,
         "title": string,
         "description": string,
-        "cookingTime": number,
+        "cookingTime": string,
         "ingredients": {
           "name": string,
           "amount": string
@@ -230,10 +235,8 @@ export class RecipeService {
         - 영상에 없는 정보는 추가하지 마라.
 
       - cookingTime
-        - 전체 조리 시간을 "분 단위 숫자(Number)"로 작성한다.
-        - 최소 1부터 시작한다.
-        - 단위(분, 분 정도 등)는 절대 포함하지 마라.
         - 자막에 등장한 시간 정보를 기준으로 전체 조리 시간을 작성한다.
+        - 1분, 10분, 1시간 등 String타입으로 작성한다.
         - 알 수 없으면 "시간 정보 없음"으로 작성한다.
 
       ────────────────────────
