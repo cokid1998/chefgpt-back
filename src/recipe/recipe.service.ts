@@ -2,35 +2,80 @@ import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
+// import puppeteer from "puppeteer";
 // import { Innertube } from "youtubei.js";
 
 @Injectable()
 export class RecipeService {
   private readonly openAI: OpenAI;
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly httpService: HttpService,
+  ) {
     this.openAI = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
 
   async getYoutubeRecipeScript(youtubeUrl: string) {
+    // const browser = await puppeteer.launch({
+    //   headless: false, // 👈 브라우저 띄우기
+    //   defaultViewport: null, // 👈 실제 크롬 창 크기
+    //   slowMo: 50, // 👈 동작 느리게 (디버깅용)
+    //   args: [
+    //     "--no-sandbox",
+    //     "--disable-setuid-sandbox",
+    //     "--disable-dev-shm-usage",
+    //   ],
+    // });
+
+    // const page = await browser.newPage();
+
+    // await page.setUserAgent(
+    //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+    // );
+
+    // await page.goto(youtubeUrl, {
+    //   waitUntil: "networkidle2",
+    // });
+
+    // // description "더보기" 클릭
+    // await page.waitForSelector("#expand", { timeout: 1000 });
+    // await page.click("#expand");
+
+    // // 2. "스크립트 표시" 버튼 클릭
+    // await page.evaluate(() => {
+    //   const buttons = Array.from(document.querySelectorAll("button"));
+    //   const transcriptBtn = buttons.find(
+    //     (btn) =>
+    //       btn.innerText.includes("스크립트 표시") ||
+    //       btn.getAttribute("aria-label") === "스크립트 표시",
+    //   );
+    //   transcriptBtn?.click();
+    // });
+
+    // // 3. 스크립트(Transcript) 패널 로드 대기
+    // await page.waitForSelector("ytd-transcript-renderer", { timeout: 10000 });
+
     const videoId = this.extractVideoId(youtubeUrl);
 
-    const { Innertube } = await import("youtubei.js");
-
-    const youtube = await Innertube.create({
-      generate_session_locally: true,
-      lang: "ko",
-      location: "ko",
-      retrieve_player: false,
-    });
-
     // Todo: 간헐적 혹은 요청을 많이하면 caption_tracks가 응답으로 나오지않음...
-    // 정확한 원인은 모르겠지만 caption관련 데이터를 유튜브가 이제 응답해주지 않는거같음.
-    // 따라서 caption에서 추출한 데이터를 short_description를 이용해서 자막 데이터를 추출하도록 수정
-    const info = await youtube.getBasicInfo(videoId);
-    console.log("info: ", info.basic_info.short_description);
+    // 정확한 원인은 모르겠지만 자막 관련 데이터를 유튜브가 이제 응답해주지 않는거 같음....
+    // 따라서 caption_tracks으로 추출했었던 데이터를 short_description를 이용해서 자막 데이터를 추출하도록 수정
+    // https://github.com/LuanRT/YouTube.js/issues/1102 더 이상 youtubei.js에서 자막 정보를 제공해주지 않는것으로 확인
+
+    // const { Innertube } = await import("youtubei.js");
+    // const youtube = await Innertube.create({
+    //   generate_session_locally: true,
+    //   lang: "ko",
+    //   location: "ko",
+    //   retrieve_player: false,
+    // });
+    // const info = await youtube.getBasicInfo(videoId);
+    // console.log("info: ", info);
 
     // const res = await fetch(info.captions.caption_tracks[0].base_url);
     // console.log("res: ", res);
@@ -41,13 +86,31 @@ export class RecipeService {
     // const scriptArray = this.xmlToArray(xml);
     // console.log("scriptArray: ", scriptArray);
 
-    const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
-      info.basic_info.short_description,
-    );
+    // const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
+    //   info.basic_info.short_description,
+    // );
 
-    console.log(scriptSummary);
+    // console.log(scriptSummary);
 
-    return scriptSummary;
+    // return scriptSummary;
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService.get(
+          `https://youtube-transcript-production-d19c.up.railway.app/transcript?id=${videoId}`,
+        ),
+      );
+      console.log(res.data);
+
+      const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
+        res.data.full_text,
+      );
+
+      return scriptSummary;
+    } catch (error) {
+      console.log(error);
+      throw new Error("유튜브 자막 추출 에러");
+    }
 
     // return new Promise((resolve) => {
     //   setTimeout(() => {
