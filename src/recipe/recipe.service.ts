@@ -331,19 +331,6 @@ export class RecipeService {
     return JSON.parse(res.output_text);
   }
 
-  private xmlToArray(xml: string): string[] {
-    const result: string[] = [];
-
-    const regex = /<text[^>]*>([\s\S]*?)<\/text>/g;
-    let match: RegExpExecArray | null;
-
-    while ((match = regex.exec(xml)) !== null) {
-      result.push(match[1]);
-    }
-
-    return result;
-  }
-
   private extractVideoId(url: string) {
     const match = url.match(
       /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
