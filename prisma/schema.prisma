@@ -151,6 +151,7 @@ model Recipe {
   recipeIngredients Recipe_Ingredient[]
   recipeSteps       Recipe_Step[]
   viewCount         Int                 @default(0)
+  thumbnailUrl      String
 
   user   User @relation(fields: [userId], references: [id])
   userId Int
