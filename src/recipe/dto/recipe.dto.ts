@@ -47,7 +47,7 @@ export class CreateRecipeDto {
   @ApiProperty({ example: "얼큰하고 시원한 국물 맛이 일품인 김치찌개입니다." })
   description: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({ example: 1 })
   categoryId: number;
@@ -57,18 +57,14 @@ export class CreateRecipeDto {
   @ApiProperty({ example: "30분" })
   cookingTime?: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => IngredientDto)
+  @IsString()
   // Todo: swagger문서화
   @ApiProperty({
     example: `[{name:"배추김치",amount:"300g"},{name:"돼지고기",amount:"200g"}]`,
   })
-  ingredients: IngredientDto[];
+  ingredients: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => StepDto)
+  @IsString()
   // Todo: swagger문서화
   @ApiProperty({
     example: `[{
@@ -79,5 +75,5 @@ export class CreateRecipeDto {
               tip: "신김치를 사용하면 더 깊은 맛이 나요.",
             }]`,
   })
-  steps: StepDto[];
+  steps: string;
 }

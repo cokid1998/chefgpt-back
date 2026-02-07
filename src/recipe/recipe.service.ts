@@ -4,6 +4,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
+import { BUCKET_NAME, supabase } from "src/supabase/supabase";
 // import puppeteer from "puppeteer";
 // import { Innertube } from "youtubei.js";
 
@@ -373,27 +374,72 @@ export class RecipeService {
     return category;
   }
 
-  async createRecipe(userId: number, payload: CreateRecipeDto) {
-    const { ingredients, steps, categoryId, ...recipeData } = payload;
-    const recipe = await this.prisma.recipe.create({
-      data: {
-        ...recipeData,
-        user: {
-          connect: { id: userId },
-        },
-        category: {
-          connect: { id: categoryId },
-        },
-        recipeIngredients: {
-          create: ingredients,
-        },
-        recipeSteps: {
-          create: steps,
-        },
-      },
-    });
+  async createRecipe(
+    userId: number,
+    payload: CreateRecipeDto,
+    thumbnailImageFile?: Express.Multer.File,
+  ) {
+    try {
+      const { ingredients, steps, categoryId, ...recipeData } = payload;
+      const parsedIngredients = JSON.parse(ingredients);
+      const parsedSteps = JSON.parse(steps);
+      const parsedCategoryId = Number(categoryId);
 
-    return recipe;
+      const recipe = await this.prisma.recipe.create({
+        data: {
+          ...recipeData,
+          user: {
+            connect: { id: userId },
+          },
+          category: {
+            connect: { id: parsedCategoryId },
+          },
+          recipeIngredients: {
+            create: parsedIngredients,
+          },
+          recipeSteps: {
+            create: parsedSteps,
+          },
+          thumbnailUrl: "",
+        },
+      });
+
+      let thumbnailUrl = "";
+
+      const fileExtension =
+        thumbnailImageFile.originalname.split(".").pop() || "webp";
+      const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
+      const filePath = `/${userId}/recipe-thumbnail/${recipe.id}/${fileName}`;
+
+      // supabase storage에 썸네일 저장
+      const { data, error: storageError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(filePath, thumbnailImageFile.buffer, {
+          contentType: thumbnailImageFile.mimetype,
+        });
+
+      if (storageError) throw storageError;
+
+      // 저장한 이미지 url 추출
+      const { data: publicUrlData } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(data.path);
+
+      thumbnailUrl = publicUrlData.publicUrl;
+
+      const updateThumbnailRecipe = await this.prisma.recipe.update({
+        data: {
+          thumbnailUrl,
+        },
+        where: {
+          id: recipe.id,
+        },
+      });
+
+      return updateThumbnailRecipe;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async findOneRecipe(recipeId: number) {

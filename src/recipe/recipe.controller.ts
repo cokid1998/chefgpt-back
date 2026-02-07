@@ -8,11 +8,14 @@ import {
   UsePipes,
   ValidationPipe,
   Body,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import { RecipeService } from "./recipe.service";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
-import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiConsumes, ApiOperation } from "@nestjs/swagger";
 import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("recipe")
 export class RecipeController {
@@ -48,17 +51,19 @@ export class RecipeController {
   @Post("")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
-  @UsePipes(new ValidationPipe())
+  @UseInterceptors(FileInterceptor("thumbnailImageFile"))
+  @ApiConsumes("multipart/form-data")
   @ApiOperation({
     summary: "레시피 생성",
   })
   async createRecipe(
     @Req() req: Request & { user: { userId: number; email: string } },
     @Body() payload: CreateRecipeDto,
+    @UploadedFile() thumbnailImageFile?: Express.Multer.File,
   ) {
     const { userId } = req.user;
 
-    return this.recipeService.createRecipe(userId, payload);
+    return this.recipeService.createRecipe(userId, payload, thumbnailImageFile);
   }
 
   @Get(":recipeId")
