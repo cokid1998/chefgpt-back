@@ -381,6 +381,7 @@ export class RecipeService {
   ) {
     try {
       const { ingredients, steps, categoryId, ...recipeData } = payload;
+
       const parsedIngredients = JSON.parse(ingredients);
       const parsedSteps = JSON.parse(steps);
       const parsedCategoryId = Number(categoryId);
@@ -388,6 +389,7 @@ export class RecipeService {
       const recipe = await this.prisma.recipe.create({
         data: {
           ...recipeData,
+          thumbnailUrl: "",
           user: {
             connect: { id: userId },
           },
@@ -400,11 +402,12 @@ export class RecipeService {
           recipeSteps: {
             create: parsedSteps,
           },
-          thumbnailUrl: "",
         },
       });
 
-      let thumbnailUrl = "";
+      if (!thumbnailImageFile) {
+        return recipe;
+      }
 
       const fileExtension =
         thumbnailImageFile.originalname.split(".").pop() || "webp";
@@ -425,7 +428,7 @@ export class RecipeService {
         .from(BUCKET_NAME)
         .getPublicUrl(data.path);
 
-      thumbnailUrl = publicUrlData.publicUrl;
+      const thumbnailUrl = publicUrlData.publicUrl;
 
       const updateThumbnailRecipe = await this.prisma.recipe.update({
         data: {
