@@ -60,10 +60,16 @@ export class RecipeController {
     @Req() req: Request & { user: { userId: number; email: string } },
     @Body() payload: CreateRecipeDto,
     @UploadedFile() thumbnailImageFile?: Express.Multer.File,
+    @Query("youtubeUrl") youtubeUrl?: string,
   ) {
     const { userId } = req.user;
 
-    return this.recipeService.createRecipe(userId, payload, thumbnailImageFile);
+    return this.recipeService.createRecipe(
+      userId,
+      payload,
+      thumbnailImageFile,
+      youtubeUrl,
+    );
   }
 
   @Get(":recipeId")

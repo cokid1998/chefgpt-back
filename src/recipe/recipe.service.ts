@@ -378,6 +378,7 @@ export class RecipeService {
     userId: number,
     payload: CreateRecipeDto,
     thumbnailImageFile?: Express.Multer.File,
+    youtubeUrl?: string,
   ) {
     try {
       const { ingredients, steps, categoryId, ...recipeData } = payload;
@@ -388,8 +389,10 @@ export class RecipeService {
 
       const recipe = await this.prisma.recipe.create({
         data: {
-          ...recipeData,
-          thumbnailUrl: "",
+          title: recipeData.title,
+          description: recipeData.description,
+          cookingTime: recipeData.cookingTime,
+          thumbnailUrl: youtubeUrl ? this.getYoutubeThumbnail(youtubeUrl) : "",
           user: {
             connect: { id: userId },
           },
@@ -410,7 +413,7 @@ export class RecipeService {
       }
 
       const fileExtension =
-        thumbnailImageFile.originalname.split(".").pop() || "webp";
+        thumbnailImageFile?.originalname.split(".").pop() || "webp";
       const fileName = `${Date.now()}-${crypto.randomUUID()}.${fileExtension}`;
       const filePath = `/${userId}/recipe-thumbnail/${recipe.id}/${fileName}`;
 
