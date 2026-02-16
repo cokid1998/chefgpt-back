@@ -26,7 +26,7 @@ export class RecipeController {
     return this.recipeService.getYoutubeRecipeScript(url);
   }
 
-  @Get("")
+  @Get("my")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
   @ApiOperation({
