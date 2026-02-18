@@ -26,6 +26,17 @@ export class RecipeController {
     return this.recipeService.getYoutubeRecipeScript(url);
   }
 
+  @Get("")
+  @ApiOperation({
+    summary: "레시피 목록",
+  })
+  async getRecipe(
+    @Query("categoryId") categoryId?: string,
+    @Query("search") search?: string,
+  ) {
+    return this.recipeService.getRecipe(Number(categoryId), search);
+  }
+
   @Get("my")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")

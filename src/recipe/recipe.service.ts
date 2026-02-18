@@ -5,6 +5,7 @@ import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { BUCKET_NAME, supabase } from "src/supabase/supabase";
+import { Prisma } from "prisma/generated/client";
 // import puppeteer from "puppeteer";
 // import { Innertube } from "youtubei.js";
 
@@ -450,5 +451,35 @@ export class RecipeService {
 
   async findOneRecipe(recipeId: number) {
     return recipeId;
+  }
+
+  async getRecipe(categoryId: number, search: string) {
+    let where: Prisma.RecipeWhereInput = {};
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: "insensitive",
+      };
+    }
+
+    const recipe = await this.prisma.recipe.findMany({
+      where,
+      select: {
+        id: true,
+        category: true,
+        cookingTime: true,
+        description: true,
+        title: true,
+        viewCount: true,
+        thumbnailUrl: true,
+      },
+    });
+
+    return recipe;
   }
 }
