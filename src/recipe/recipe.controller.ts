@@ -10,6 +10,8 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
+  Param,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { RecipeService } from "./recipe.service";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
@@ -87,7 +89,7 @@ export class RecipeController {
   @ApiOperation({
     summary: "recipeId에 해당하는 레시피",
   })
-  async findOneRecipe(recipeId: number) {
+  async findOneRecipe(@Param("recipeId", ParseIntPipe) recipeId: number) {
     return this.recipeService.findOneRecipe(recipeId);
   }
 }
