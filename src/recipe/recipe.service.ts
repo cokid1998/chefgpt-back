@@ -494,6 +494,11 @@ export class RecipeService {
         thumbnailUrl: true,
         recipeSteps: true,
       },
+      orderBy: { id: "desc" },
+    });
+
+    return recipe;
+  }
     });
 
     return recipe;
