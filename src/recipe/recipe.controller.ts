@@ -1,5 +1,6 @@
 import {
   Get,
+  Patch,
   Controller,
   Query,
   Post,
@@ -83,6 +84,14 @@ export class RecipeController {
       thumbnailImageFile,
       youtubeUrl,
     );
+  }
+
+  @Patch(":recipeId")
+  @ApiOperation({
+    summary: "레시피 조회수 증가",
+  })
+  async incrementViewCount(@Param("recipeId", ParseIntPipe) recipeId: number) {
+    return this.recipeService.incrementViewCount(recipeId);
   }
 
   @Get(":recipeId")

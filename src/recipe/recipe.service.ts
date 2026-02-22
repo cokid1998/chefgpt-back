@@ -499,6 +499,15 @@ export class RecipeService {
 
     return recipe;
   }
+
+  async incrementViewCount(recipeId: number) {
+    const recipe = this.prisma.recipe.update({
+      where: { id: recipeId },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
     });
 
     return recipe;
