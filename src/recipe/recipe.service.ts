@@ -62,13 +62,10 @@ export class RecipeService {
     // // 3. 스크립트(Transcript) 패널 로드 대기
     // await page.waitForSelector("ytd-transcript-renderer", { timeout: 10000 });
 
-    const videoId = this.extractVideoId(youtubeUrl);
-
     // Todo: 간헐적 혹은 요청을 많이하면 caption_tracks가 응답으로 나오지않음...
     // 정확한 원인은 모르겠지만 자막 관련 데이터를 유튜브가 이제 응답해주지 않는거 같음....
     // 따라서 caption_tracks으로 추출했었던 데이터를 short_description를 이용해서 자막 데이터를 추출하도록 수정
     // https://github.com/LuanRT/YouTube.js/issues/1102 더 이상 youtubei.js에서 자막 정보를 제공해주지 않는것으로 확인
-
     // const { Innertube } = await import("youtubei.js");
     // const youtube = await Innertube.create({
     //   generate_session_locally: true,
@@ -91,74 +88,77 @@ export class RecipeService {
     // const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
     //   info.basic_info.short_description,
     // );
-
     // console.log(scriptSummary);
-
     // return scriptSummary;
 
-    try {
-      const res = await firstValueFrom(
-        this.httpService.get(
-          `https://youtube-transcript-production-d19c.up.railway.app/transcript?id=${videoId}`,
-        ),
-      );
-      console.log(res.data);
+    const videoId = this.extractVideoId(youtubeUrl);
 
-      const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
-        res.data.full_text,
-      );
+    // try {
+    //   const res = await firstValueFrom(
+    //     this.httpService.get(
+    //       `https://youtube-transcript-production-d19c.up.railway.app/transcript?id=${videoId}`,
+    //     ),
+    //   );
 
-      return scriptSummary;
-    } catch (error) {
-      console.log(error);
-      throw new Error("유튜브 자막 추출 에러");
-    }
+    //   const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
+    //     res.data.full_text,
+    //   );
 
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     resolve({
-    //       category: "양식",
-    //       ingredients: [
-    //         { name: "스파게티", amount: "200g" },
-    //         { name: "마늘", amount: "5쪽" },
-    //         { name: "올리브 오일", amount: "3큰술" },
-    //         { name: "고추", amount: "1개" },
-    //         { name: "파슬리", amount: "약간" },
-    //         { name: "소금", amount: "적당량" },
-    //         { name: "후추", amount: "적당량" },
-    //       ],
-    //       title: "스파게티 알리오 올리오",
-    //       description:
-    //         "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
-    //       cookingTime: "20분",
-    //       steps: [
-    //         {
-    //           stepTitle: "양파 손질",
-    //           description:
-    //             "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
-    //           tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
-    //         },
-    //         {
-    //           stepTitle: "두부 준비",
-    //           description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
-    //           tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
-    //         },
-    //         {
-    //           stepTitle: "양념 끓이기",
-    //           description:
-    //             "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
-    //           tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
-    //         },
-    //         {
-    //           stepTitle: "마무리",
-    //           description:
-    //             "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
-    //           tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
-    //         },
-    //       ],
-    //     });
-    //   }, 500);
-    // });
+    //   return scriptSummary;
+    // } catch (error) {
+    //   console.log(error);
+    //   throw new Error("유튜브 자막 추출 에러");
+    // }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          category: "양식",
+          title: "스파게티 알리오 올리오",
+          description:
+            "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
+          cookingTime: "20분",
+          ingredients: [
+            { name: "스파게티", amount: "200g" },
+            { name: "마늘", amount: "5쪽" },
+            { name: "올리브 오일", amount: "3큰술" },
+            { name: "고추", amount: "1개" },
+            { name: "파슬리", amount: "약간" },
+            { name: "소금", amount: "적당량" },
+            { name: "후추", amount: "적당량" },
+          ],
+          steps: [
+            {
+              stepNumber: 1,
+              stepTitle: "양파 손질",
+              description:
+                "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
+              tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
+            },
+            {
+              stepNumber: 2,
+              stepTitle: "두부 준비",
+              description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
+              tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
+            },
+            {
+              stepNumber: 3,
+              stepTitle: "양념 끓이기",
+              description:
+                "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
+              tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
+            },
+            {
+              stepNumber: 4,
+              stepTitle: "마무리",
+              description:
+                "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
+              tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
+            },
+          ],
+        });
+      }, 500);
+    });
   }
 
   async youtubeScriptSummaryFromOpenAI(scriptArray: string) {
@@ -450,7 +450,22 @@ export class RecipeService {
   }
 
   async findOneRecipe(recipeId: number) {
-    return recipeId;
+    const recipe = await this.prisma.recipe.findFirst({
+      where: {
+        id: recipeId,
+      },
+      select: {
+        id: true,
+        category: true,
+        cookingTime: true,
+        description: true,
+        title: true,
+        viewCount: true,
+        thumbnailUrl: true,
+        recipeSteps: true,
+      },
+    });
+    return recipe;
   }
 
   async getRecipe(categoryId: number, search: string) {
@@ -477,6 +492,7 @@ export class RecipeService {
         title: true,
         viewCount: true,
         thumbnailUrl: true,
+        recipeSteps: true,
       },
     });
 
