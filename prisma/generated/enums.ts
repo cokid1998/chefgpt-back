@@ -34,9 +34,9 @@ export const AuthProvider = {
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
 
 
-export const RecipeType = {
+export const Recipe_Source = {
   YOUTUBE: 'YOUTUBE',
   MANUAL: 'MANUAL'
 } as const
 
-export type RecipeType = (typeof RecipeType)[keyof typeof RecipeType]
+export type Recipe_Source = (typeof Recipe_Source)[keyof typeof Recipe_Source]

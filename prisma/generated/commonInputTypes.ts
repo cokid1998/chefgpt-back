@@ -240,21 +240,21 @@ export type EnumOption_NameWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
 }
 
-export type EnumRecipeTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecipeType | Prisma.EnumRecipeTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel> | $Enums.RecipeType
+export type EnumRecipe_SourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.Recipe_Source | Prisma.EnumRecipe_SourceFieldRefInput<$PrismaModel>
+  in?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel> | $Enums.Recipe_Source
 }
 
-export type EnumRecipeTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecipeType | Prisma.EnumRecipeTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecipeTypeWithAggregatesFilter<$PrismaModel> | $Enums.RecipeType
+export type EnumRecipe_SourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Recipe_Source | Prisma.EnumRecipe_SourceFieldRefInput<$PrismaModel>
+  in?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecipe_SourceWithAggregatesFilter<$PrismaModel> | $Enums.Recipe_Source
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel>
 }
 
 export type NestedIntFilter<$PrismaModel = never> = {
@@ -496,21 +496,21 @@ export type NestedEnumOption_NameWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumOption_NameFilter<$PrismaModel>
 }
 
-export type NestedEnumRecipeTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecipeType | Prisma.EnumRecipeTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel> | $Enums.RecipeType
+export type NestedEnumRecipe_SourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.Recipe_Source | Prisma.EnumRecipe_SourceFieldRefInput<$PrismaModel>
+  in?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel> | $Enums.Recipe_Source
 }
 
-export type NestedEnumRecipeTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecipeType | Prisma.EnumRecipeTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecipeType[] | Prisma.ListEnumRecipeTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecipeTypeWithAggregatesFilter<$PrismaModel> | $Enums.RecipeType
+export type NestedEnumRecipe_SourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Recipe_Source | Prisma.EnumRecipe_SourceFieldRefInput<$PrismaModel>
+  in?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Recipe_Source[] | Prisma.ListEnumRecipe_SourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecipe_SourceWithAggregatesFilter<$PrismaModel> | $Enums.Recipe_Source
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumRecipeTypeFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecipe_SourceFilter<$PrismaModel>
 }
 
 

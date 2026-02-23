@@ -11,7 +11,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 import { ApiOperation, ApiProperty } from "@nestjs/swagger";
-import { RecipeType } from "prisma/generated/enums";
+import { Recipe_Source } from "prisma/generated/enums";
 
 // 재료 DTO
 export class IngredientDto {
@@ -79,10 +79,10 @@ export class CreateRecipeDto {
   })
   steps: string;
 
-  @IsEnum(RecipeType)
+  @IsEnum(Recipe_Source)
   @IsNotEmpty()
   @ApiProperty({
     example: "MANUAL",
   })
-  recipeType: RecipeType;
+  recipeSource: Recipe_Source;
 }
