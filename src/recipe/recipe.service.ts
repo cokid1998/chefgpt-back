@@ -463,8 +463,10 @@ export class RecipeService {
         viewCount: true,
         thumbnailUrl: true,
         recipeSteps: true,
+        recipeIngredients: true,
       },
     });
+
     return recipe;
   }
 
@@ -493,6 +495,7 @@ export class RecipeService {
         viewCount: true,
         thumbnailUrl: true,
         recipeSteps: true,
+        recipeIngredients: true,
       },
       orderBy: { id: "desc" },
     });
