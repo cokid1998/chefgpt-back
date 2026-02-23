@@ -383,6 +383,7 @@ async function main() {
         description: "얼큰하고 시원한 국물 맛이 일품인 김치찌개입니다.",
         cookingTime: "30분",
         thumbnailUrl: "",
+        recipeType: "MANUAL",
 
         recipeIngredients: {
           create: [

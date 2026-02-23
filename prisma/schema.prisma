@@ -23,6 +23,11 @@ enum AuthProvider {
   KAKAO
 }
 
+enum RecipeType {
+  YOUTUBE
+  MANUAL
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   createdAt    DateTime @default(now())
@@ -152,6 +157,7 @@ model Recipe {
   recipeSteps       Recipe_Step[]
   viewCount         Int                 @default(0)
   thumbnailUrl      String
+  recipeType        RecipeType
 
   user   User @relation(fields: [userId], references: [id])
   userId Int

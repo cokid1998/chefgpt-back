@@ -7,9 +7,11 @@ import {
   ValidateNested,
   ArrayMinSize,
   Min,
+  IsEnum,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiOperation, ApiProperty } from "@nestjs/swagger";
+import { RecipeType } from "prisma/generated/enums";
 
 // 재료 DTO
 export class IngredientDto {
@@ -76,4 +78,11 @@ export class CreateRecipeDto {
             }]`,
   })
   steps: string;
+
+  @IsEnum(RecipeType)
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "MANUAL",
+  })
+  recipeType: RecipeType;
 }
