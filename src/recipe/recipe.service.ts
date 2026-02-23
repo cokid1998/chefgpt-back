@@ -395,6 +395,7 @@ export class RecipeService {
           cookingTime: recipeData.cookingTime,
           thumbnailUrl: youtubeUrl ? this.getYoutubeThumbnail(youtubeUrl) : "",
           recipeSource: recipeData.recipeSource,
+          youtubeVideoId: this.extractVideoId(youtubeUrl),
           user: {
             connect: { id: userId },
           },
@@ -465,6 +466,8 @@ export class RecipeService {
         thumbnailUrl: true,
         recipeSteps: true,
         recipeIngredients: true,
+        recipeSource: true,
+        youtubeVideoId: true,
       },
     });
 
@@ -497,6 +500,8 @@ export class RecipeService {
         thumbnailUrl: true,
         recipeSteps: true,
         recipeIngredients: true,
+        recipeSource: true,
+        youtubeVideoId: true,
       },
       orderBy: { id: "desc" },
     });
