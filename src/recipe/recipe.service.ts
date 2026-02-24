@@ -451,7 +451,7 @@ export class RecipeService {
     }
   }
 
-  async findOneRecipe(recipeId: number) {
+  async findOneRecipe(recipeId: number, userId?: number) {
     const recipe = await this.prisma.recipe.findFirst({
       where: {
         id: recipeId,
@@ -469,13 +469,18 @@ export class RecipeService {
         recipeSource: true,
         youtubeVideoId: true,
         likeCount: true,
+
+        like: userId ? { where: { userId } } : false,
       },
     });
 
-    return recipe;
+    return {
+      ...recipe,
+      liked: userId ? recipe.like.length > 0 : false,
+    };
   }
 
-  async getRecipe(categoryId: number, search: string) {
+  async getRecipe(categoryId: number, search: string, userId?: number) {
     let where: Prisma.RecipeWhereInput = {};
 
     if (categoryId) {
@@ -489,7 +494,7 @@ export class RecipeService {
       };
     }
 
-    const recipe = await this.prisma.recipe.findMany({
+    const recipes = await this.prisma.recipe.findMany({
       where,
       select: {
         id: true,
@@ -504,11 +509,20 @@ export class RecipeService {
         recipeSource: true,
         youtubeVideoId: true,
         likeCount: true,
+
+        like: userId
+          ? {
+              where: { userId },
+            }
+          : false,
       },
       orderBy: { id: "desc" },
     });
 
-    return recipe;
+    return recipes.map((recipe) => ({
+      ...recipe,
+      liked: userId ? recipe.like.length > 0 : false,
+    }));
   }
 
   async incrementViewCount(recipeId: number) {

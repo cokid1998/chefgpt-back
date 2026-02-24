@@ -19,6 +19,7 @@ import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { ApiBearerAuth, ApiConsumes, ApiOperation } from "@nestjs/swagger";
 import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { OptionalJwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 
 @Controller("recipe")
 export class RecipeController {
@@ -30,14 +31,18 @@ export class RecipeController {
   }
 
   @Get("")
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "레시피 목록",
   })
   async getRecipe(
+    @Req() req: Request & { user: { userId: number; email: string } },
     @Query("categoryId") categoryId?: string,
     @Query("search") search?: string,
   ) {
-    return this.recipeService.getRecipe(Number(categoryId), search);
+    const userId = req.user?.userId;
+    return this.recipeService.getRecipe(Number(categoryId), search, userId);
   }
 
   @Get("my")
@@ -95,11 +100,17 @@ export class RecipeController {
   }
 
   @Get(":recipeId")
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "recipeId에 해당하는 레시피",
   })
-  async findOneRecipe(@Param("recipeId", ParseIntPipe) recipeId: number) {
-    return this.recipeService.findOneRecipe(recipeId);
+  async findOneRecipe(
+    @Req() req: Request & { user: { userId: number; email: string } },
+    @Param("recipeId", ParseIntPipe) recipeId: number,
+  ) {
+    const userId = req.user?.userId;
+    return this.recipeService.findOneRecipe(recipeId, userId);
   }
 
   @Post("/like/:recipeId")
