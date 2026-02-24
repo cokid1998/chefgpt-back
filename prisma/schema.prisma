@@ -88,8 +88,7 @@ model Vote {
   endDate     DateTime
 
   // Vote와 User의 관계
-  voteUsers   Vote_User[]
-  recipeLikes Recipe_Like[]
+  voteUsers Vote_User[]
 }
 
 model Vote_User {
@@ -159,6 +158,8 @@ model Recipe {
   thumbnailUrl      String
   recipeSource      Recipe_Source
   youtubeVideoId    String? // recipeSource가 "YOUTUBE"일 때 유튜브Id, "MANUAL"일 때 null
+  like              Recipe_Like[]
+  likeCount         Int                 @default(0)
 
   user   User @relation(fields: [userId], references: [id])
   userId Int
@@ -198,8 +199,8 @@ model Recipe_Like {
   recipeId Int
   userId   Int
 
-  vote Vote @relation(fields: [recipeId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id])
 
   // 동일한 userId는 동일한 recipeId를 여러개 가질 수 없음
   @@unique([recipeId, userId])

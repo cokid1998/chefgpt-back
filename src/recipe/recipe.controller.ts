@@ -101,4 +101,16 @@ export class RecipeController {
   async findOneRecipe(@Param("recipeId", ParseIntPipe) recipeId: number) {
     return this.recipeService.findOneRecipe(recipeId);
   }
+
+  @Post("/like/:recipeId")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "레시피 좋아요 토글" })
+  async toggleRecipeLike(
+    @Param("recipeId", ParseIntPipe) recipeId: number,
+    @Req() req: Request & { user: { userId: number; email: string } },
+  ) {
+    const { userId } = req.user;
+    return this.recipeService.toggleRecipeLike(recipeId, userId);
+  }
 }

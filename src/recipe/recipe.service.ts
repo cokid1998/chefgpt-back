@@ -468,6 +468,7 @@ export class RecipeService {
         recipeIngredients: true,
         recipeSource: true,
         youtubeVideoId: true,
+        likeCount: true,
       },
     });
 
@@ -502,6 +503,7 @@ export class RecipeService {
         recipeIngredients: true,
         recipeSource: true,
         youtubeVideoId: true,
+        likeCount: true,
       },
       orderBy: { id: "desc" },
     });
@@ -520,5 +522,49 @@ export class RecipeService {
     });
 
     return recipe;
+  }
+
+  async toggleRecipeLike(recipeId: number, userId: number) {
+    return this.prisma.$transaction(async (tx) => {
+      const existingLike = await tx.recipe_Like.findUnique({
+        where: {
+          recipeId_userId: { recipeId, userId },
+        },
+      });
+
+      if (existingLike) {
+        await tx.recipe_Like.delete({
+          where: {
+            recipeId_userId: { recipeId, userId },
+          },
+        });
+
+        await tx.recipe.update({
+          where: { id: recipeId },
+          data: {
+            likeCount: {
+              decrement: 1,
+            },
+          },
+        });
+
+        return { liked: false };
+      }
+
+      await tx.recipe_Like.create({
+        data: { recipeId, userId },
+      });
+
+      await tx.recipe.update({
+        where: { id: recipeId },
+        data: {
+          likeCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      return { liked: true };
+    });
   }
 }
