@@ -352,7 +352,7 @@ export class RecipeService {
   }
 
   async getMyRecipe(userId: number) {
-    const recipe = await this.prisma.recipe.findMany({
+    const recipes = await this.prisma.recipe.findMany({
       where: {
         userId,
       },
@@ -363,10 +363,22 @@ export class RecipeService {
         description: true,
         title: true,
         viewCount: true,
+        thumbnailUrl: true,
+        recipeSteps: true,
+        recipeIngredients: true,
+        recipeSource: true,
+        youtubeVideoId: true,
+        likeCount: true,
+
+        like: userId ? { where: { userId } } : false,
       },
+      orderBy: { id: "desc" },
     });
 
-    return recipe;
+    return recipes.map((recipe) => ({
+      ...recipe,
+      liked: recipe.like.length > 0,
+    }));
   }
 
   async getRecipeCategory() {
