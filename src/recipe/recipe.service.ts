@@ -407,7 +407,7 @@ export class RecipeService {
           cookingTime: recipeData.cookingTime,
           thumbnailUrl: youtubeUrl ? this.getYoutubeThumbnail(youtubeUrl) : "",
           recipeSource: recipeData.recipeSource,
-          youtubeVideoId: this.extractVideoId(youtubeUrl),
+          youtubeVideoId: youtubeUrl ? this.extractVideoId(youtubeUrl) : null,
           user: {
             connect: { id: userId },
           },
