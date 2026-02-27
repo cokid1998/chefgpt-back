@@ -35,6 +35,13 @@ async function bootstrap() {
 
   SwaggerModule.setup("api", app, documentFactory);
 
+  app.use("/", (req, res, next) => {
+    if (req.path === "/") {
+      return res.redirect("/api");
+    }
+    next();
+  });
+
   app.enableCors({
     origin: ["http://localhost:5173", "https://chefgpt-front.vercel.app"],
     credentials: true,
