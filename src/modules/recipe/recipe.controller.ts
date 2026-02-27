@@ -42,7 +42,7 @@ export class RecipeController {
     @Query("categoryId") categoryId?: string,
     @Query("search") search?: string,
   ) {
-    const { userId } = user;
+    const userId = user?.userId;
     return this.recipeService.getRecipe(Number(categoryId), search, userId);
   }
 
