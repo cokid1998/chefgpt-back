@@ -17,6 +17,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateFoodDto, PatchFoodDto } from "src/food/dto/food.dto";
 import { FoodService } from "src/food/food.service";
+import { CurrentUser, JWTUser } from "src/decorators/current-user.decorator";
 
 export type ExpireType = "ALL" | "EXPIRE" | "IMMINENT" | "NORMAL";
 
@@ -39,11 +40,8 @@ export class FoodController {
   @ApiOperation({
     summary: "음식 추가",
   })
-  createFood(
-    @Req() req: Request & { user: { userId: number; email: string } },
-    @Body() payload: CreateFoodDto
-  ) {
-    const { userId, email } = req.user;
+  createFood(@CurrentUser() user: JWTUser, @Body() payload: CreateFoodDto) {
+    const { userId, email: _ } = user;
     return this.foodService.createFood(userId, payload);
   }
 
@@ -80,12 +78,12 @@ export class FoodController {
     required: false,
   })
   findAllFood(
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
     @Query("category") category?: string,
     @Query("search") search?: string,
     @Query("expire") expire?: ExpireType
   ) {
-    const { userId, email: _ } = req.user;
+    const { userId, email: _ } = user;
     return this.foodService.findAllFood(userId, category, search, expire);
   }
 
@@ -95,10 +93,8 @@ export class FoodController {
   @ApiOperation({
     summary: "음식 보관장소별갯수",
   })
-  countLocation(
-    @Req() req: Request & { user: { userId: number; email: string } }
-  ) {
-    const { userId, email: _ } = req.user;
+  countLocation(@CurrentUser() user: JWTUser, @Body() payload: CreateFoodDto) {
+    const { userId, email: _ } = user;
     return this.foodService.count(userId);
   }
 
@@ -109,11 +105,11 @@ export class FoodController {
     summary: "음식 단건 조회",
   })
   findOneFood(
-    @Req() req: Request & { user: { userId: number; email: string } },
-    @Param("foodId", ParseIntPipe) foodId: number
+    @CurrentUser() user: JWTUser,
+    @Body() payload: CreateFoodDto,
+    @Param("foodId", ParseIntPipe) foodId: number,
   ) {
-    const { userId, email: _ } = req.user;
-
+    const { userId, email: _ } = user;
     return this.foodService.findOneFood(userId, foodId);
   }
 

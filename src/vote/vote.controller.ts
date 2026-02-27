@@ -19,6 +19,7 @@ import {
   JwtAuthGuard,
   OptionalJwtAuthGuard,
 } from "src/auth/guard/jwt-auth.guard";
+import { CurrentUser, JWTUser } from "src/decorators/current-user.decorator";
 
 @Controller("vote")
 export class VoteController {
@@ -31,10 +32,10 @@ export class VoteController {
     summary: "투표 데이터 (진행중, 종료)",
   })
   findVotes(
+    @CurrentUser() user: JWTUser,
     @Query("status", new DefaultValuePipe("active")) status: "active" | "close",
-    @Req() req: Request & { user: { userId: number; email: string } }
   ) {
-    const userId = req.user?.userId ?? null;
+    const userId = user.userId ?? null;
     return this.voteService.findVotes(userId, status);
   }
 
@@ -65,10 +66,11 @@ export class VoteController {
     summary: "투표하기",
   })
   submitVote(
+    @CurrentUser() user: JWTUser,
     @Param("voteId", ParseIntPipe) voteId: number,
-    @Req() req: Request & { user: { userId: number; email: string } },
     @Body() payload: CreateSubmitVoteDto
   ) {
-    return this.voteService.submitVote(voteId, req.user.userId, payload);
+    const { userId, email: _ } = user;
+    return this.voteService.submitVote(voteId, userId, payload);
   }
 }

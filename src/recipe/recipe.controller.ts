@@ -5,9 +5,6 @@ import {
   Query,
   Post,
   UseGuards,
-  Req,
-  UsePipes,
-  ValidationPipe,
   Body,
   UseInterceptors,
   UploadedFile,
@@ -20,6 +17,7 @@ import { ApiBearerAuth, ApiConsumes, ApiOperation } from "@nestjs/swagger";
 import { CreateRecipeDto } from "src/recipe/dto/recipe.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { OptionalJwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
+import { CurrentUser, JWTUser } from "src/decorators/current-user.decorator";
 
 @Controller("recipe")
 export class RecipeController {
@@ -37,11 +35,11 @@ export class RecipeController {
     summary: "레시피 목록",
   })
   async getRecipe(
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
     @Query("categoryId") categoryId?: string,
     @Query("search") search?: string,
   ) {
-    const userId = req.user?.userId;
+    const { userId } = user;
     return this.recipeService.getRecipe(Number(categoryId), search, userId);
   }
 
@@ -51,10 +49,8 @@ export class RecipeController {
   @ApiOperation({
     summary: "내 레시피 목록",
   })
-  async getMyRecipe(
-    @Req() req: Request & { user: { userId: number; email: string } },
-  ) {
-    const { userId, email: _ } = req.user;
+  async getMyRecipe(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
 
     return this.recipeService.getMyRecipe(userId);
   }
@@ -76,12 +72,12 @@ export class RecipeController {
     summary: "레시피 생성",
   })
   async createRecipe(
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
     @Body() payload: CreateRecipeDto,
     @UploadedFile() thumbnailImageFile?: Express.Multer.File,
     @Query("youtubeUrl") youtubeUrl?: string,
   ) {
-    const { userId } = req.user;
+    const { userId, email: _ } = user;
 
     return this.recipeService.createRecipe(
       userId,
@@ -106,10 +102,10 @@ export class RecipeController {
     summary: "recipeId에 해당하는 레시피",
   })
   async findOneRecipe(
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
     @Param("recipeId", ParseIntPipe) recipeId: number,
   ) {
-    const userId = req.user?.userId;
+    const { userId, email: _ } = user;
     return this.recipeService.findOneRecipe(recipeId, userId);
   }
 
@@ -119,9 +115,9 @@ export class RecipeController {
   @ApiOperation({ summary: "레시피 좋아요 토글" })
   async toggleRecipeLike(
     @Param("recipeId", ParseIntPipe) recipeId: number,
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
   ) {
-    const { userId } = req.user;
+    const { userId, email: _ } = user;
     return this.recipeService.toggleRecipeLike(recipeId, userId);
   }
 }

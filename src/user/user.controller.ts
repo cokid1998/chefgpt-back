@@ -12,6 +12,7 @@ import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { UpdateUserInfoDto } from "src/user/dto/user.dto";
 import { UserService } from "src/user/user.service";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { CurrentUser, JWTUser } from "src/decorators/current-user.decorator";
 
 @Controller("user")
 export class UserController {
@@ -26,11 +27,11 @@ export class UserController {
     summary: "유저정보 수정",
   })
   patchUserInfo(
-    @Req() req: Request & { user: { userId: number; email: string } },
+    @CurrentUser() user: JWTUser,
     @Body() payload: UpdateUserInfoDto,
     @UploadedFile() thumbnailImageFile?: Express.Multer.File,
   ) {
-    const { userId } = req.user;
+    const { userId, email: _ } = user;
     // 1. 유저가 유효한지 체크
     // 2. supabase Storage에 썸네일 사진 저장
     // 3. 썸네일 사진 url DB에 저장
