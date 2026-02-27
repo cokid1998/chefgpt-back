@@ -16,16 +16,20 @@ export class MyInfoService {
     const totalViewCount =
       articleViewCount._sum.viewCount + recipeViewCount._sum.viewCount;
 
+    const [articleLikes, recipeLikes] = await Promise.all([
+      this.prisma.article.aggregate({ _sum: { likeCount: true } }),
+      this.prisma.recipe.aggregate({ _sum: { likeCount: true } }),
+    ]);
+    const totalLike = articleLikes._sum.likeCount + recipeLikes._sum.likeCount;
+
     const votePulls = await this.prisma.vote_User.count({
       where: { userId },
     });
 
-    console.log(votePulls);
-
     return {
       recipeCount,
       totalViewCount,
-      totalLike: 5, //Todo: 아티클 좋아요 기능 설계
+      totalLike,
       votePulls,
     };
   }
