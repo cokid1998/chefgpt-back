@@ -1,7 +1,8 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, UseGuards, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt-auth.guard";
 import { MyInfoService } from "src/myInfo/myInfo.service";
+import { CurrentUser, JWTUser } from "src/decorators/current-user.decorator";
 
 @Controller("myinfo")
 export class MyInfoController {
@@ -14,7 +15,8 @@ export class MyInfoController {
     summary:
       "내 정보 배너 데이터 개수 (내 레시피, 총 조회수, 총 좋아요, 참여한 투표)",
   })
-  myInfoCount() {
-    return this.MyinfoService.findMyInfoBannerData();
+  myInfoCount(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.MyinfoService.findMyInfoBannerData(userId);
   }
 }
