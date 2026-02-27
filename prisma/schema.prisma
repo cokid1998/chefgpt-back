@@ -46,8 +46,9 @@ model User {
   voteUsers Vote_User[]
 
   // User와 Recipe의 관계
-  recipes     Recipe[]
-  recipeLikes Recipe_Like[]
+  recipes      Recipe[]
+  recipeLikes  Recipe_Like[]
+  articleLikes Article_Like[]
 }
 
 model Food_Category {
@@ -105,13 +106,15 @@ model Vote_User {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
+  id          Int            @id @default(autoincrement())
+  createdAt   DateTime       @default(now())
   title       String
   summary     String?
   contentJSON String
   readingTime Int
-  viewCount   Int      @default(0)
+  viewCount   Int            @default(0)
+  like        Article_Like[]
+  likeCount   Int            @default(0)
 
   // 외부키
   categoryId Int
@@ -120,6 +123,17 @@ model Article {
   articleTagRelations Article_Tag_Relation[]
 
   @@index([categoryId])
+}
+
+model Article_Like {
+  id        Int @id @default(autoincrement())
+  articleId Int
+  userId    Int
+
+  user    User    @relation(fields: [userId], references: [id])
+  article Article @relation(fields: [articleId], references: [id])
+
+  @@unique([articleId, userId])
 }
 
 model Article_Category {
