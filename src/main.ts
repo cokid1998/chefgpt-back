@@ -33,7 +33,9 @@ async function bootstrap() {
   // '/api' 경로에 Swagger UI 인터페이스를 설정
   // 예: http://localhost:3000/api로 접속가능
 
-  SwaggerModule.setup("api", app, documentFactory);
+  SwaggerModule.setup("api", app, documentFactory, {
+    useGlobalPrefix: false,
+  });
 
   app.use("/", (req, res, next) => {
     if (req.path === "/") {
