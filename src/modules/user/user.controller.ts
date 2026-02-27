@@ -1,0 +1,44 @@
+import {
+  Body,
+  Controller,
+  Patch,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiConsumes } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/modules/auth/guard/jwt-auth.guard";
+import { UpdateUserInfoDto } from "src/modules/user/dto/user.dto";
+import { UserService } from "src/modules/user/user.service";
+import { FileInterceptor } from "@nestjs/platform-express";
+import {
+  CurrentUser,
+  JWTUser,
+} from "src/common/decorators/current-user.decorator";
+
+@Controller("user")
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Patch()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @UseInterceptors(FileInterceptor("thumbnailImageFile"))
+  @ApiConsumes("multipart/form-data")
+  @ApiOperation({
+    summary: "유저정보 수정",
+  })
+  patchUserInfo(
+    @CurrentUser() user: JWTUser,
+    @Body() payload: UpdateUserInfoDto,
+    @UploadedFile() thumbnailImageFile?: Express.Multer.File,
+  ) {
+    const { userId, email: _ } = user;
+    // 1. 유저가 유효한지 체크
+    // 2. supabase Storage에 썸네일 사진 저장
+    // 3. 썸네일 사진 url DB에 저장
+
+    return this.userService.patchUserInfo(userId, payload, thumbnailImageFile);
+  }
+}
