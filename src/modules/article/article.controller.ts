@@ -74,10 +74,10 @@ export class ArticleController {
     return this.articleService.incrementViewCount(articleId);
   }
 
-  @Patch("/like/:articleId")
+  @Post("/like/:articleId")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
-  @ApiOperation({ summary: "아티클 조회수 증가" })
+  @ApiOperation({ summary: "아티클 좋아요 토글" })
   async toggleArticleLike(
     @Param("articleId", ParseIntPipe) articleId: number,
     @CurrentUser() user: JWTUser,
