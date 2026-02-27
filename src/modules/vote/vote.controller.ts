@@ -41,7 +41,7 @@ export class VoteController {
     @CurrentUser() user: JWTUser,
     @Query("status", new DefaultValuePipe("active")) status: "active" | "close",
   ) {
-    const userId = user.userId ?? null;
+    const userId = user?.userId ?? null;
     return this.voteService.findVotes(userId, status);
   }
 

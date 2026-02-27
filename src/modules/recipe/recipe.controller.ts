@@ -42,7 +42,7 @@ export class RecipeController {
     @Query("categoryId") categoryId?: string,
     @Query("search") search?: string,
   ) {
-    const { userId } = user;
+    const userId = user?.userId;
     return this.recipeService.getRecipe(Number(categoryId), search, userId);
   }
 
@@ -108,7 +108,7 @@ export class RecipeController {
     @CurrentUser() user: JWTUser,
     @Param("recipeId", ParseIntPipe) recipeId: number,
   ) {
-    const { userId, email: _ } = user;
+    const userId = user?.userId;
     return this.recipeService.findOneRecipe(recipeId, userId);
   }
 
