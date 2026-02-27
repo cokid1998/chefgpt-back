@@ -7,22 +7,34 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import {
+  CurrentUser,
+  JWTUser,
+} from "src/common/decorators/current-user.decorator";
 import { ArticleService } from "src/modules/article/article.service";
 import { CreateArticleDto } from "src/modules/article/dto/article.dto";
+import {
+  JwtAuthGuard,
+  OptionalJwtAuthGuard,
+} from "src/modules/auth/guard/jwt-auth.guard";
 
 @Controller("article")
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: "요리 정보 아티클" })
   async findAllArticle(
+    @CurrentUser() user: JWTUser,
     @Query("category") category?: string,
     @Query("search") search?: string,
   ) {
-    return this.articleService.findAllArticle(category, search);
+    const userId = user?.userId;
+    return this.articleService.findAllArticle(category, search, userId);
   }
 
   @Get("category")
@@ -38,9 +50,14 @@ export class ArticleController {
   }
 
   @Get(":articleId")
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: "아티클 단건 조회" })
-  async findOneArticle(@Param("articleId", ParseIntPipe) articleId: number) {
-    return this.articleService.findOneArticle(articleId);
+  async findOneArticle(
+    @CurrentUser() user: JWTUser,
+    @Param("articleId", ParseIntPipe) articleId: number,
+  ) {
+    const userId = user?.userId;
+    return this.articleService.findOneArticle(articleId, userId);
   }
 
   @Post("")
@@ -55,5 +72,17 @@ export class ArticleController {
     @Param("articleId", ParseIntPipe) articleId: number,
   ) {
     return this.articleService.incrementViewCount(articleId);
+  }
+
+  @Patch("/like/:articleId")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "아티클 조회수 증가" })
+  async toggleArticleLike(
+    @Param("articleId", ParseIntPipe) articleId: number,
+    @CurrentUser() user: JWTUser,
+  ) {
+    const { userId, email: _ } = user;
+    return this.articleService.toggleArticleLike(articleId, userId);
   }
 }

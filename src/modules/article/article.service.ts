@@ -9,7 +9,7 @@ import { getReadingTimeFromText } from "src/common/util/readingTime";
 export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllArticle(category: string, search: string) {
+  async findAllArticle(category: string, search: string, userId?: number) {
     const where: Prisma.ArticleWhereInput = {};
 
     if (category) {
@@ -36,6 +36,13 @@ export class ArticleService {
         readingTime: true,
         viewCount: true,
         createdAt: true,
+        likeCount: true,
+        like: userId
+          ? {
+              where: { userId },
+            }
+          : false,
+
         articleTagRelations: {
           select: {
             tag: {
@@ -53,6 +60,7 @@ export class ArticleService {
       ({ articleTagRelations, ...article }) => ({
         ...article,
         tags: articleTagRelations.map((at) => at.tag.name),
+        liked: userId ? article.like.length > 0 : false,
       }),
     );
 
@@ -72,8 +80,8 @@ export class ArticleService {
     return count;
   }
 
-  async findOneArticle(articleId: number) {
-    const articles = await this.prisma.article.findFirst({
+  async findOneArticle(articleId: number, userId?: number) {
+    const article = await this.prisma.article.findFirst({
       where: {
         id: articleId,
       },
@@ -86,6 +94,9 @@ export class ArticleService {
         readingTime: true,
         viewCount: true,
         createdAt: true,
+        likeCount: true,
+        like: userId ? { where: { userId } } : false,
+
         articleTagRelations: {
           select: {
             tag: {
@@ -98,11 +109,12 @@ export class ArticleService {
       },
     });
 
-    const { articleTagRelations, ...formatArticle } = articles;
+    const { articleTagRelations, ...formatArticle } = article;
 
     return {
       ...formatArticle,
       tags: articleTagRelations.map((at) => at.tag.name),
+      liked: userId ? article.like.length > 0 : false,
     };
   }
 
@@ -176,5 +188,49 @@ export class ArticleService {
     });
 
     return article;
+  }
+
+  async toggleArticleLike(articleId: number, userId: number) {
+    return this.prisma.$transaction(async (tx) => {
+      const existingLike = await tx.article_Like.findUnique({
+        where: {
+          articleId_userId: { articleId, userId },
+        },
+      });
+
+      if (existingLike) {
+        await tx.article_Like.delete({
+          where: {
+            articleId_userId: { articleId, userId },
+          },
+        });
+
+        await tx.article.update({
+          where: { id: articleId },
+          data: {
+            likeCount: {
+              decrement: 1,
+            },
+          },
+        });
+
+        return { liked: false };
+      }
+
+      await tx.article_Like.create({
+        data: { articleId, userId },
+      });
+
+      await tx.article.update({
+        where: { id: articleId },
+        data: {
+          likeCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      return { liked: true };
+    });
   }
 }
