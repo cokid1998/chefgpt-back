@@ -34,7 +34,12 @@ async function bootstrap() {
   // 예: http://localhost:3000/api로 접속가능
 
   SwaggerModule.setup("api", app, documentFactory, {
-    useGlobalPrefix: false,
+    customCssUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css",
+    customJs: [
+      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.min.js",
+    ],
   });
 
   app.use("/", (req, res, next) => {
