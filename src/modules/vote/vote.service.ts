@@ -154,4 +154,46 @@ export class VoteService {
     });
     return result;
   }
+
+  async getMyVote(userId: number) {
+    const votes = await this.prisma.vote.findMany({
+      where: { userId },
+      orderBy: {
+        startDate: "desc",
+      },
+    });
+
+    // 각 투표별로 A/B 집계
+    const results = await Promise.all(
+      votes.map(async (vote) => {
+        const grouped = await this.prisma.vote_User.groupBy({
+          by: ["selectOption"],
+          where: { voteId: vote.id },
+          _count: {
+            selectOption: true,
+          },
+        });
+
+        const optionACount =
+          grouped.find((g) => g.selectOption === "A")?._count.selectOption ?? 0;
+
+        const optionBCount =
+          grouped.find((g) => g.selectOption === "B")?._count.selectOption ?? 0;
+
+        return {
+          id: vote.id,
+          title: vote.title,
+          description: vote.description,
+          optionA: vote.optionA,
+          optionB: vote.optionB,
+          optionACount,
+          optionBCount,
+          participantsCount: optionACount + optionBCount,
+          startDate: vote.startDate,
+        };
+      }),
+    );
+
+    return results;
+  }
 }

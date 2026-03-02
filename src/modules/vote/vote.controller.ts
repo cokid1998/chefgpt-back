@@ -65,6 +65,17 @@ export class VoteController {
     return this.voteService.countVote();
   }
 
+  @Get("my")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "내가 만든 투표",
+  })
+  async getMyVote(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.voteService.getMyVote(userId);
+  }
+
   @Post(":voteId/submit")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
