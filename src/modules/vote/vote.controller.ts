@@ -52,8 +52,9 @@ export class VoteController {
   @ApiOperation({
     summary: "투표 생성",
   })
-  createVote(@Body() payload: CreateVoteDto) {
-    return this.voteService.createVote(payload);
+  createVote(@CurrentUser() user: JWTUser, @Body() payload: CreateVoteDto) {
+    const { userId, email: _ } = user;
+    return this.voteService.createVote(userId, payload);
   }
 
   @Get("count")

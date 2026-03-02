@@ -57,13 +57,14 @@ export class VoteService {
     return formatVotes;
   }
 
-  async createVote(payload: CreateVoteDto) {
+  async createVote(userId, payload: CreateVoteDto) {
     const parsedStartDate = parseUtcDate(payload.startDate, "start");
 
     const parsedEndDate = parseUtcDate(payload.endDate, "end");
 
     const result = await this.prisma.vote.create({
       data: {
+        userId,
         ...payload,
         startDate: parsedStartDate,
         endDate: parsedEndDate,

@@ -127,6 +127,7 @@ async function main() {
   const votes = await prisma.vote.createMany({
     data: [
       {
+        userId: user.id,
         title: "MSG 논란",
         description:
           "식품첨가물 MSG(글루탐산나트륨)은 몸에 나쁘다고 생각하시나요?",
@@ -136,6 +137,7 @@ async function main() {
         endDate: now.subtract(3, "day").toDate(),
       },
       {
+        userId: user.id,
         title: "부먹 vs 찍먹",
         description:
           "탕수육은 소스를 부어 먹는 게 맞을까, 찍어 먹는 게 맞을까?",
@@ -145,6 +147,7 @@ async function main() {
         endDate: now.add(14, "day").toDate(),
       },
       {
+        userId: user.id,
         title: "파인애플 피자",
         description: "파인애플 피자는 사라져야한다",
         optionA: "그렇다",
@@ -153,6 +156,7 @@ async function main() {
         endDate: now.add(10, "day").toDate(),
       },
       {
+        userId: user.id,
         title: "민트초코",
         description: "민트초코는 음식일까, 치약일까?",
         optionA: "치약",

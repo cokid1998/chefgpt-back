@@ -49,6 +49,7 @@ model User {
   recipes      Recipe[]
   recipeLikes  Recipe_Like[]
   articleLikes Article_Like[]
+  votes        Vote[]
 }
 
 model Food_Category {
@@ -87,6 +88,9 @@ model Vote {
   optionB     String
   startDate   DateTime
   endDate     DateTime
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Vote와 User의 관계
   voteUsers Vote_User[]
