@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Post,
   Query,
-  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -74,6 +73,17 @@ export class VoteController {
   async getMyVote(@CurrentUser() user: JWTUser) {
     const { userId, email: _ } = user;
     return this.voteService.getMyVote(userId);
+  }
+
+  @Get("my-voted")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "내가 참여한 투표",
+  })
+  async getMyVoted(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.voteService.getMyVoted(userId);
   }
 
   @Post(":voteId/submit")

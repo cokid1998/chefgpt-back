@@ -6,6 +6,7 @@ import {
   CreateVoteDto,
 } from "src/modules/vote/dto/vote.dto";
 import { parseUtcDate } from "src/common/util/date";
+import { Option_Name } from "prisma/generated/enums";
 
 @Injectable()
 export class VoteService {
@@ -195,5 +196,38 @@ export class VoteService {
     );
 
     return results;
+  }
+
+  async getMyVoted(userId: number) {
+    const votes = await this.prisma.vote_User.findMany({
+      where: { userId },
+      include: {
+        vote: {
+          include: {
+            _count: {
+              select: { voteUsers: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        vote: {
+          startDate: "desc",
+        },
+      },
+    });
+
+    return votes.map((vote) => ({
+      id: vote.vote.id,
+      title: vote.vote.title,
+      description: vote.vote.description,
+      selectedOption: vote.selectOption,
+      selectedOptionName:
+        vote.selectOption === Option_Name.A
+          ? vote.vote.optionA
+          : vote.vote.optionB,
+      participantsCount: vote.vote._count.voteUsers,
+      startDate: vote.vote.startDate,
+    }));
   }
 }
