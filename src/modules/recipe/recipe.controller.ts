@@ -58,6 +58,17 @@ export class RecipeController {
     return this.recipeService.getMyRecipe(userId);
   }
 
+  @Get("liked")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "좋아요 누른 레시피 리스트",
+  })
+  async getLikedRecipe(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.recipeService.getLikedRecipe(userId);
+  }
+
   @Get("category")
   @ApiOperation({
     summary: "레시피 카테고리",

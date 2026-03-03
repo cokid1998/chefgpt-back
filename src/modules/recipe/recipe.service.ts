@@ -381,6 +381,37 @@ export class RecipeService {
     }));
   }
 
+  async getLikedRecipe(userId: number) {
+    const recipes = await this.prisma.recipe.findMany({
+      where: {
+        like: {
+          some: { userId }, // 내가 좋아요한 레시피 필터
+        },
+      },
+      select: {
+        id: true,
+        category: true,
+        cookingTime: true,
+        description: true,
+        title: true,
+        viewCount: true,
+        thumbnailUrl: true,
+        recipeSteps: true,
+        recipeIngredients: true,
+        recipeSource: true,
+        youtubeVideoId: true,
+        likeCount: true,
+        like: { where: { userId } },
+      },
+      orderBy: { id: "desc" },
+    });
+
+    return recipes.map((recipe) => ({
+      ...recipe,
+      liked: recipe.like.length > 0, // 항상 true지만 일관성 유지
+    }));
+  }
+
   async getRecipeCategory() {
     const category = await this.prisma.recipe_Category.findMany();
 
