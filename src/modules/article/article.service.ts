@@ -157,6 +157,44 @@ export class ArticleService {
     }));
   }
 
+  async getLikedArticle(userId: number) {
+    const articles = await this.prisma.article.findMany({
+      where: {
+        like: {
+          some: { userId },
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        title: true,
+        summary: true,
+        contentJSON: true,
+        readingTime: true,
+        viewCount: true,
+        likeCount: true,
+        category: true,
+        articleTagRelations: {
+          select: {
+            tag: {
+              select: { name: true },
+            },
+          },
+        },
+        like: { where: { userId } },
+      },
+      orderBy: { id: "desc" },
+    });
+
+    return articles.map((article) => ({
+      ...article,
+      tags: article.articleTagRelations.map((r) => r.tag.name),
+      liked: article.like.length > 0,
+      articleTagRelations: undefined,
+      like: undefined,
+    }));
+  }
+
   async createArticle(userId: number, payload: CreateArticleDto) {
     // 고려해야할것
     // 사용자A가 이미 만든 태그를 사용자B가 똑같이 태그를 만들었을 때 중복된 태그가 생성이 되지 않아야함

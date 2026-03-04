@@ -58,6 +58,15 @@ export class ArticleController {
     return this.articleService.getMyArticle(userId);
   }
 
+  @Get("liked")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "좋아요 누른 아티클" })
+  async getLikedArticle(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.articleService.getLikedArticle(userId);
+  }
+
   @Get(":articleId")
   @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: "아티클 단건 조회" })
