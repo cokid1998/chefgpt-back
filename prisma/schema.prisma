@@ -50,6 +50,7 @@ model User {
   recipeLikes  Recipe_Like[]
   articleLikes Article_Like[]
   votes        Vote[]
+  articles     Article[]
 }
 
 model Food_Category {
@@ -126,7 +127,11 @@ model Article {
 
   articleTagRelations Article_Tag_Relation[]
 
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([categoryId])
+  @@index([userId])
 }
 
 model Article_Like {

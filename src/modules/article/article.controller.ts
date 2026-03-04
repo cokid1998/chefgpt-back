@@ -61,9 +61,15 @@ export class ArticleController {
   }
 
   @Post("")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "요리 정보 아티클 생성" })
-  async createArticle(@Body() payload: CreateArticleDto) {
-    return this.articleService.createArticle(payload);
+  async createArticle(
+    @CurrentUser() user: JWTUser,
+    @Body() payload: CreateArticleDto,
+  ) {
+    const { userId, email: _ } = user;
+    return this.articleService.createArticle(userId, payload);
   }
 
   @Patch(":articleId")

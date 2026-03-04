@@ -28,6 +28,7 @@ export class ArticleService {
     const articles = await this.prisma.article.findMany({
       where,
       select: {
+        userId: true,
         id: true,
         title: true,
         summary: true,
@@ -86,6 +87,7 @@ export class ArticleService {
         id: articleId,
       },
       select: {
+        userId: true,
         id: true,
         title: true,
         summary: true,
@@ -133,6 +135,7 @@ export class ArticleService {
       // 1. Article테이블에 데이터 생성
       const newArticle = await tx.article.create({
         data: {
+          userId,
           title,
           contentJSON,
           summary,
