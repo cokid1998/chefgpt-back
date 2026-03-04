@@ -49,6 +49,15 @@ export class ArticleController {
     return this.articleService.articleCount();
   }
 
+  @Get("my")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "내가 만든 아티클" })
+  async getMyArticle(@CurrentUser() user: JWTUser) {
+    const { userId, email: _ } = user;
+    return this.articleService.getMyArticle(userId);
+  }
+
   @Get(":articleId")
   @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: "아티클 단건 조회" })
