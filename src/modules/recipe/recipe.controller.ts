@@ -101,6 +101,15 @@ export class RecipeController {
     );
   }
 
+  @Post("chatbot")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({ summary: "쳇봇을 이용한 레시피 생성" })
+  async chatbot(@Body() payload: { message: string }) {
+    const { message } = payload;
+    return this.recipeService.chatbot(message);
+  }
+
   @Patch(":recipeId")
   @ApiOperation({
     summary: "레시피 조회수 증가",

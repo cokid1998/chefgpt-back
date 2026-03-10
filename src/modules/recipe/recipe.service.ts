@@ -6,8 +6,6 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { BUCKET_NAME, supabase } from "src/supabase/supabase";
 import { Prisma } from "prisma/generated/client";
-// import puppeteer from "puppeteer";
-// import { Innertube } from "youtubei.js";
 
 @Injectable()
 export class RecipeService {
@@ -23,74 +21,6 @@ export class RecipeService {
   }
 
   async getYoutubeRecipeScript(youtubeUrl: string) {
-    // const browser = await puppeteer.launch({
-    //   headless: false, // 👈 브라우저 띄우기
-    //   defaultViewport: null, // 👈 실제 크롬 창 크기
-    //   slowMo: 50, // 👈 동작 느리게 (디버깅용)
-    //   args: [
-    //     "--no-sandbox",
-    //     "--disable-setuid-sandbox",
-    //     "--disable-dev-shm-usage",
-    //   ],
-    // });
-
-    // const page = await browser.newPage();
-
-    // await page.setUserAgent(
-    //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-    // );
-
-    // await page.goto(youtubeUrl, {
-    //   waitUntil: "networkidle2",
-    // });
-
-    // // description "더보기" 클릭
-    // await page.waitForSelector("#expand", { timeout: 1000 });
-    // await page.click("#expand");
-
-    // // 2. "스크립트 표시" 버튼 클릭
-    // await page.evaluate(() => {
-    //   const buttons = Array.from(document.querySelectorAll("button"));
-    //   const transcriptBtn = buttons.find(
-    //     (btn) =>
-    //       btn.innerText.includes("스크립트 표시") ||
-    //       btn.getAttribute("aria-label") === "스크립트 표시",
-    //   );
-    //   transcriptBtn?.click();
-    // });
-
-    // // 3. 스크립트(Transcript) 패널 로드 대기
-    // await page.waitForSelector("ytd-transcript-renderer", { timeout: 10000 });
-
-    // Todo: 간헐적 혹은 요청을 많이하면 caption_tracks가 응답으로 나오지않음...
-    // 정확한 원인은 모르겠지만 자막 관련 데이터를 유튜브가 이제 응답해주지 않는거 같음....
-    // 따라서 caption_tracks으로 추출했었던 데이터를 short_description를 이용해서 자막 데이터를 추출하도록 수정
-    // https://github.com/LuanRT/YouTube.js/issues/1102 더 이상 youtubei.js에서 자막 정보를 제공해주지 않는것으로 확인
-    // const { Innertube } = await import("youtubei.js");
-    // const youtube = await Innertube.create({
-    //   generate_session_locally: true,
-    //   lang: "ko",
-    //   location: "ko",
-    //   retrieve_player: false,
-    // });
-    // const info = await youtube.getBasicInfo(videoId);
-    // console.log("info: ", info);
-
-    // const res = await fetch(info.captions.caption_tracks[0].base_url);
-    // console.log("res: ", res);
-
-    // const xml = await res.text();
-    // console.log("xml: ", xml);
-
-    // const scriptArray = this.xmlToArray(xml);
-    // console.log("scriptArray: ", scriptArray);
-
-    // const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
-    //   info.basic_info.short_description,
-    // );
-    // console.log(scriptSummary);
-    // return scriptSummary;
-
     const videoId = this.extractVideoId(youtubeUrl);
 
     // try {
@@ -623,5 +553,157 @@ export class RecipeService {
 
       return { liked: true };
     });
+  }
+
+  async chatbot(message: string) {
+    const ingredients = await this.prisma.food.findMany();
+    const category = await this.prisma.recipe_Category.findMany();
+
+    const prompt = `
+    - 너는 사용자의 냉장고 식재료를 기반으로 요리 레시피를 추천해주는 AI 요리 어시스턴트다.
+    - 식재료에 대한 정보는 이름(name), 개수(quantity), 단위(unit), 보관방법(location, COLD: 냉장, FROZEN: 냉동, ROOM_TEMP: 실온), 유통기한(expiration_date), memo(기타 특이사항), categoryId(1:채소,2:유제품,3:기타,4:해산물,5:곡물,6:육류,7:과일,8:조미료)이 있다.
+
+    [서비스 배경 — 매우 중요]
+    ────────────────────────
+    이 서비스는 다음과 같은 UI로 구성되어 있다.
+
+    1. 사용자가 채팅으로 레시피 추천을 요청한다.
+    2. AI는 채팅 메시지로 추천 레시피를 안내한다.
+    3. 채팅 메시지 하단에 "레시피 보기" 버튼이 노출된다.
+    4. 버튼을 누르면 모달이 열리고, 모달은 슬라이드 형식이다.
+    5. 슬라이드는 step1 → step2 → step3 순서로 넘어가는 단계별 조리 과정을 보여준다.
+
+    따라서 steps 배열은 사용자가 슬라이드를 넘기며 순서대로 따라할 수 있도록
+    각 단계를 명확하고 독립적으로 작성해야 한다.
+    ────────────────────────
+
+    [사용자 메시지]
+    ${message}
+
+    [사용자 보유 식재료]
+    ${JSON.stringify(ingredients)}
+
+    ────────────────────────
+    [역할 및 목표]
+    ────────────────────────
+    - 사용자가 보유한 식재료를 최대한 활용한 레시피를 추천한다.
+    - 없는 재료는 절대 언급하지 않고 레시피에 포함하지 않는다.
+    - 사용자의 질문이나 요청에 맞는 요리를 추천한다.
+
+    ────────────────────────
+    [공통 문체 규칙 — 매우 중요]
+    ────────────────────────
+    - 모든 문장은 사용자에게 설명하거나 안내하는 어투로 작성한다.
+    - 문장은 반드시 다음과 같은 형태로 끝나야 한다.
+      - "~해주세요."
+      - "~추천드려요."
+      - "~만들어보세요."
+      - "~즐길 수 있습니다."
+    - "~한다", "~함", "~하였다" 같은 설명체 문장은 사용하지 마라.
+    - 친근하고 자연스러운 말투를 유지한다.
+
+    ────────────────────────
+    [응답 JSON 구조]
+    ────────────────────────
+
+    [카테고리 목록]
+    ${JSON.stringify(category)}
+    // 위 목록에서 요리에 맞는 카테고리의 id와 name을 정확히 사용해야 한다.
+
+    {
+      "message": string,        // 채팅창에 표시될 친근한 레시피 추천 안내 메시지
+      "recipe": {
+        "categoryId" : number,  // 아래 카테고리 목록에서 해당하는 id를 선택
+        "category": string,     // 한식 / 양식 / 중식 / 일식 / 디저트 / 음료 / 기타 중 하나
+        "title": string,        // 요리 이름
+        "description": string,  // 요리 소개 1~2문장
+        "cookingTime": string,  // 조리 시간 예: "30분"
+        "ingredients": {
+          "name": string,       // 재료명
+          "amount": string      // 양 예: "200g", "3큰술", "적당량"
+        }[],
+        "steps": {
+          "stepNumber": number, // 1부터 순차적으로 증가 (슬라이드 번호와 동일)
+          "stepTitle": string,  // 슬라이드 상단에 표시될 단계 제목 10자 내외
+          "description": string,// 해당 슬라이드에서 사용자가 따라할 조리 과정
+          "tip": string         // 해당 단계 조리 팁 또는 주의사항 1문장
+        }[]
+      }
+    }
+
+
+    ────────────────────────
+    [출력 규칙]
+    ────────────────────────
+
+    - 반드시 하나의 JSON 객체만 출력해 주세요.
+    - JSON 외의 어떤 문자도 출력하지 마세요.
+    - 마크다운, 설명, 주석은 출력하지 마세요.
+    - 추천 레시피는 1개만 제공한다.
+    - 한국어로만 답변한다.
+    `;
+
+    const res = await this.openAI.responses.create({
+      model: "gpt-4.1-nano",
+      input: prompt,
+    });
+
+    return res.output_text;
+
+    // return {
+    //   message:
+    //     "보유한 재료들을 활용하여 맛있는 돼지고기 양배추 볶음을 만들어보세요.",
+    //   recipe: {
+    //     category: "기타",
+    //     title: "돼지고기 양배추 볶음",
+    //     description:
+    //       "담백하고 맛있는 돼지고기와 신선한 양배추가 어우러진 간단한 볶음 요리입니다. 빠르게 만들어 즐기기에 좋아요.",
+    //     cookingTime: "20분",
+    //     ingredients: [
+    //       {
+    //         name: "양배추",
+    //         amount: "1개",
+    //       },
+    //       {
+    //         name: "돼지고기",
+    //         amount: "500g",
+    //       },
+    //       {
+    //         name: "후추",
+    //         amount: "적당량",
+    //       },
+    //     ],
+    //     steps: [
+    //       {
+    //         stepNumber: 1,
+    //         stepTitle: "재료 손질",
+    //         description:
+    //           "양배추는 먹기 좋은 크기로 채 썰고, 돼지고기는 적당한 크기로 써세요.",
+    //         tip: "양배추는 너무 얇지 않게 써야 식감이 좋아요.",
+    //       },
+    //       {
+    //         stepNumber: 2,
+    //         stepTitle: "고기 익히기",
+    //         description:
+    //           "팬에 돼지고기를 넣고 중불에서 볶아주세요. 고기가 거의 익을 때까지 기다리면 돼요.",
+    //         tip: "기름이 적으면 살짝 기름을 더해도 좋아요.",
+    //       },
+    //       {
+    //         stepNumber: 3,
+    //         stepTitle: "양배추 넣기",
+    //         description:
+    //           "고기가 익으면 양배추를 넣고 함께 볶아주세요. 양배추가 숨이 죽을 때까지 볶으시면 돼요.",
+    //         tip: "너무 오래 볶지 말고 아삭한 식감을 유지하세요.",
+    //       },
+    //       {
+    //         stepNumber: 4,
+    //         stepTitle: "간 맞추기",
+    //         description:
+    //           "후추를 적당히 뿌려 간을 맞추고, 필요시 소금이나 간장을 조금 더 넣어주세요.",
+    //         tip: "취향에 따라 간장을 넣어도 맛이 좋아요.",
+    //       },
+    //     ],
+    //   },
+    // };
   }
 }
