@@ -26,6 +26,7 @@ enum AuthProvider {
 enum Recipe_Source {
   YOUTUBE
   MANUAL
+  CHATBOT
 }
 
 model User {

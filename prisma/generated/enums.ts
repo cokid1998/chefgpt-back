@@ -36,7 +36,8 @@ export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
 
 export const Recipe_Source = {
   YOUTUBE: 'YOUTUBE',
-  MANUAL: 'MANUAL'
+  MANUAL: 'MANUAL',
+  CHATBOT: 'CHATBOT'
 } as const
 
 export type Recipe_Source = (typeof Recipe_Source)[keyof typeof Recipe_Source]
