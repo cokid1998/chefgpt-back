@@ -41,9 +41,17 @@ export class RecipeController {
     @CurrentUser() user: JWTUser,
     @Query("categoryId") categoryId?: string,
     @Query("search") search?: string,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
   ) {
     const userId = user?.userId;
-    return this.recipeService.getRecipe(Number(categoryId), search, userId);
+    return this.recipeService.getRecipe(
+      Number(categoryId),
+      search,
+      Number(page),
+      Number(take),
+      userId,
+    );
   }
 
   @Get("my")

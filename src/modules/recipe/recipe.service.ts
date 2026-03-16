@@ -3,9 +3,12 @@ import OpenAI from "openai";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRecipeDto } from "src/modules/recipe/dto/recipe.dto";
 import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs";
 import { BUCKET_NAME, supabase } from "src/supabase/supabase";
 import { Prisma } from "prisma/generated/client";
+import {
+  getPaginationParams,
+  getPaginationResult,
+} from "src/common/util/pagination";
 
 @Injectable()
 export class RecipeService {
@@ -453,7 +456,15 @@ export class RecipeService {
     };
   }
 
-  async getRecipe(categoryId: number, search: string, userId?: number) {
+  async getRecipe(
+    categoryId: number,
+    search: string,
+    page: number,
+    take: number = 9,
+    userId?: number,
+  ) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
     let where: Prisma.RecipeWhereInput = {};
 
     if (categoryId) {
@@ -467,35 +478,42 @@ export class RecipeService {
       };
     }
 
-    const recipes = await this.prisma.recipe.findMany({
-      where,
-      select: {
-        id: true,
-        category: true,
-        cookingTime: true,
-        description: true,
-        title: true,
-        viewCount: true,
-        thumbnailUrl: true,
-        recipeSteps: true,
-        recipeIngredients: true,
-        recipeSource: true,
-        youtubeVideoId: true,
-        likeCount: true,
+    const [recipes, totalCount] = await Promise.all([
+      this.prisma.recipe.findMany({
+        where,
+        select: {
+          id: true,
+          category: true,
+          cookingTime: true,
+          description: true,
+          title: true,
+          viewCount: true,
+          thumbnailUrl: true,
+          recipeSteps: true,
+          recipeIngredients: true,
+          recipeSource: true,
+          youtubeVideoId: true,
+          likeCount: true,
+          like: userId ? { where: { userId } } : false,
+        },
+        orderBy: { id: "desc" },
+        take: _take,
+        skip,
+      }),
 
-        like: userId
-          ? {
-              where: { userId },
-            }
-          : false,
-      },
-      orderBy: { id: "desc" },
-    });
+      this.prisma.recipe.count({ where }),
+    ]);
 
-    return recipes.map((recipe) => ({
-      ...recipe,
-      liked: userId ? recipe.like.length > 0 : false,
-    }));
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    return getPaginationResult(
+      recipes.map((recipe) => ({
+        ...recipe,
+        liked: userId ? recipe.like.length > 0 : false,
+      })),
+      totalCount,
+      _take,
+    );
   }
 
   async incrementViewCount(recipeId: number) {
@@ -643,67 +661,67 @@ export class RecipeService {
     - 한국어로만 답변한다.
     `;
 
-    const res = await this.openAI.responses.create({
-      model: "gpt-4.1-nano",
-      input: prompt,
-    });
+    // const res = await this.openAI.responses.create({
+    //   model: "gpt-4.1-nano",
+    //   input: prompt,
+    // });
 
-    return res.output_text;
+    // return res.output_text;
 
-    // return {
-    //   message:
-    //     "보유한 재료들을 활용하여 맛있는 돼지고기 양배추 볶음을 만들어보세요.",
-    //   recipe: {
-    //     category: "기타",
-    //     title: "돼지고기 양배추 볶음",
-    //     description:
-    //       "담백하고 맛있는 돼지고기와 신선한 양배추가 어우러진 간단한 볶음 요리입니다. 빠르게 만들어 즐기기에 좋아요.",
-    //     cookingTime: "20분",
-    //     ingredients: [
-    //       {
-    //         name: "양배추",
-    //         amount: "1개",
-    //       },
-    //       {
-    //         name: "돼지고기",
-    //         amount: "500g",
-    //       },
-    //       {
-    //         name: "후추",
-    //         amount: "적당량",
-    //       },
-    //     ],
-    //     steps: [
-    //       {
-    //         stepNumber: 1,
-    //         stepTitle: "재료 손질",
-    //         description:
-    //           "양배추는 먹기 좋은 크기로 채 썰고, 돼지고기는 적당한 크기로 써세요.",
-    //         tip: "양배추는 너무 얇지 않게 써야 식감이 좋아요.",
-    //       },
-    //       {
-    //         stepNumber: 2,
-    //         stepTitle: "고기 익히기",
-    //         description:
-    //           "팬에 돼지고기를 넣고 중불에서 볶아주세요. 고기가 거의 익을 때까지 기다리면 돼요.",
-    //         tip: "기름이 적으면 살짝 기름을 더해도 좋아요.",
-    //       },
-    //       {
-    //         stepNumber: 3,
-    //         stepTitle: "양배추 넣기",
-    //         description:
-    //           "고기가 익으면 양배추를 넣고 함께 볶아주세요. 양배추가 숨이 죽을 때까지 볶으시면 돼요.",
-    //         tip: "너무 오래 볶지 말고 아삭한 식감을 유지하세요.",
-    //       },
-    //       {
-    //         stepNumber: 4,
-    //         stepTitle: "간 맞추기",
-    //         description:
-    //           "후추를 적당히 뿌려 간을 맞추고, 필요시 소금이나 간장을 조금 더 넣어주세요.",
-    //         tip: "취향에 따라 간장을 넣어도 맛이 좋아요.",
-    //       },
-    //     ],
-    //   },
-    // };
+    return {
+      message:
+        "보유한 재료들을 활용하여 맛있는 돼지고기 양배추 볶음을 만들어보세요.",
+      recipe: {
+        category: "기타",
+        title: "돼지고기 양배추 볶음",
+        description:
+          "담백하고 맛있는 돼지고기와 신선한 양배추가 어우러진 간단한 볶음 요리입니다. 빠르게 만들어 즐기기에 좋아요.",
+        cookingTime: "20분",
+        ingredients: [
+          {
+            name: "양배추",
+            amount: "1개",
+          },
+          {
+            name: "돼지고기",
+            amount: "500g",
+          },
+          {
+            name: "후추",
+            amount: "적당량",
+          },
+        ],
+        steps: [
+          {
+            stepNumber: 1,
+            stepTitle: "재료 손질",
+            description:
+              "양배추는 먹기 좋은 크기로 채 썰고, 돼지고기는 적당한 크기로 써세요.",
+            tip: "양배추는 너무 얇지 않게 써야 식감이 좋아요.",
+          },
+          {
+            stepNumber: 2,
+            stepTitle: "고기 익히기",
+            description:
+              "팬에 돼지고기를 넣고 중불에서 볶아주세요. 고기가 거의 익을 때까지 기다리면 돼요.",
+            tip: "기름이 적으면 살짝 기름을 더해도 좋아요.",
+          },
+          {
+            stepNumber: 3,
+            stepTitle: "양배추 넣기",
+            description:
+              "고기가 익으면 양배추를 넣고 함께 볶아주세요. 양배추가 숨이 죽을 때까지 볶으시면 돼요.",
+            tip: "너무 오래 볶지 말고 아삭한 식감을 유지하세요.",
+          },
+          {
+            stepNumber: 4,
+            stepTitle: "간 맞추기",
+            description:
+              "후추를 적당히 뿌려 간을 맞추고, 필요시 소금이나 간장을 조금 더 넣어주세요.",
+            tip: "취향에 따라 간장을 넣어도 맛이 좋아요.",
+          },
+        ],
+      },
+    };
   }
 }
