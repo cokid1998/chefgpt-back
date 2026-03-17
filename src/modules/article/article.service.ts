@@ -1,15 +1,26 @@
 import { Injectable } from "@nestjs/common";
-import { contains } from "class-validator";
 import { Prisma } from "prisma/generated/client";
 import { CreateArticleDto } from "src/modules/article/dto/article.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { getReadingTimeFromText } from "src/common/util/readingTime";
+import {
+  getPaginationParams,
+  getPaginationResult,
+} from "src/common/util/pagination";
 
 @Injectable()
 export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllArticle(category: string, search: string, userId?: number) {
+  async findAllArticle(
+    category: string,
+    search: string,
+    page: number,
+    take: number,
+    userId?: number,
+  ) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
     const where: Prisma.ArticleWhereInput = {};
 
     if (category) {
@@ -25,37 +36,43 @@ export class ArticleService {
       };
     }
 
-    const articles = await this.prisma.article.findMany({
-      where,
-      select: {
-        userId: true,
-        id: true,
-        title: true,
-        summary: true,
-        contentJSON: true,
-        category: true,
-        readingTime: true,
-        viewCount: true,
-        createdAt: true,
-        likeCount: true,
-        like: userId
-          ? {
-              where: { userId },
-            }
-          : false,
+    const [articles, totalCount] = await Promise.all([
+      this.prisma.article.findMany({
+        where,
+        select: {
+          userId: true,
+          id: true,
+          title: true,
+          summary: true,
+          contentJSON: true,
+          category: true,
+          readingTime: true,
+          viewCount: true,
+          createdAt: true,
+          likeCount: true,
+          like: userId
+            ? {
+                where: { userId },
+              }
+            : false,
 
-        articleTagRelations: {
-          select: {
-            tag: {
-              select: {
-                name: true,
+          articleTagRelations: {
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        take: _take,
+        skip,
+      }),
+
+      this.prisma.article.count({ where }),
+    ]);
 
     const formatArticle = articles.map(
       ({ articleTagRelations, ...article }) => ({
@@ -65,7 +82,7 @@ export class ArticleService {
       }),
     );
 
-    return formatArticle;
+    return getPaginationResult(formatArticle, totalCount, _take);
   }
 
   async findAllArticleCategory() {

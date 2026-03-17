@@ -32,9 +32,17 @@ export class ArticleController {
     @CurrentUser() user: JWTUser,
     @Query("category") category?: string,
     @Query("search") search?: string,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
   ) {
     const userId = user?.userId;
-    return this.articleService.findAllArticle(category, search, userId);
+    return this.articleService.findAllArticle(
+      category,
+      search,
+      Number(page),
+      Number(take),
+      userId,
+    );
   }
 
   @Get("category")
