@@ -61,18 +61,30 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "내가 만든 아티클" })
-  async getMyArticle(@CurrentUser() user: JWTUser) {
+  async getMyArticle(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
-    return this.articleService.getMyArticle(userId);
+    return this.articleService.getMyArticle(userId, Number(page), Number(take));
   }
 
   @Get("liked")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("access-token")
   @ApiOperation({ summary: "좋아요 누른 아티클" })
-  async getLikedArticle(@CurrentUser() user: JWTUser) {
+  async getLikedArticle(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
-    return this.articleService.getLikedArticle(userId);
+    return this.articleService.getLikedArticle(
+      userId,
+      Number(page),
+      Number(take),
+    );
   }
 
   @Get(":articleId")

@@ -137,79 +137,99 @@ export class ArticleService {
     };
   }
 
-  async getMyArticle(userId: number) {
-    const articles = await this.prisma.article.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        userId: true,
-        id: true,
-        createdAt: true,
-        title: true,
-        summary: true,
-        contentJSON: true,
-        readingTime: true,
-        viewCount: true,
-        likeCount: true,
-        category: true,
-        articleTagRelations: {
-          select: {
-            tag: {
-              select: { name: true },
+  async getMyArticle(userId: number, page: number, take: number = 5) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
+    const [articles, totalCount] = await Promise.all([
+      this.prisma.article.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          userId: true,
+          id: true,
+          createdAt: true,
+          title: true,
+          summary: true,
+          contentJSON: true,
+          readingTime: true,
+          viewCount: true,
+          likeCount: true,
+          category: true,
+          articleTagRelations: {
+            select: {
+              tag: {
+                select: { name: true },
+              },
             },
           },
+          like: { where: { userId } },
         },
-        like: { where: { userId } },
-      },
-      orderBy: { id: "desc" },
-    });
+        orderBy: { id: "desc" },
+        take: _take,
+        skip,
+      }),
 
-    return articles.map((article) => ({
+      this.prisma.article.count({ where: { userId } }),
+    ]);
+
+    const articlesResult = articles.map((article) => ({
       ...article,
       tags: article.articleTagRelations.map((r) => r.tag.name),
       liked: article.like.length > 0,
       articleTagRelations: undefined,
       like: undefined,
     }));
+
+    return getPaginationResult(articlesResult, totalCount, _take);
   }
 
-  async getLikedArticle(userId: number) {
-    const articles = await this.prisma.article.findMany({
-      where: {
-        like: {
-          some: { userId },
-        },
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        title: true,
-        summary: true,
-        contentJSON: true,
-        readingTime: true,
-        viewCount: true,
-        likeCount: true,
-        category: true,
-        articleTagRelations: {
-          select: {
-            tag: {
-              select: { name: true },
-            },
+  async getLikedArticle(userId: number, page: number, take: number = 9) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
+    const [articles, totalCount] = await Promise.all([
+      this.prisma.article.findMany({
+        where: {
+          like: {
+            some: { userId },
           },
         },
-        like: { where: { userId } },
-      },
-      orderBy: { id: "desc" },
-    });
+        select: {
+          id: true,
+          createdAt: true,
+          title: true,
+          summary: true,
+          contentJSON: true,
+          readingTime: true,
+          viewCount: true,
+          likeCount: true,
+          category: true,
+          articleTagRelations: {
+            select: {
+              tag: {
+                select: { name: true },
+              },
+            },
+          },
+          like: { where: { userId } },
+        },
+        orderBy: { id: "desc" },
+        take: _take,
+        skip,
+      }),
 
-    return articles.map((article) => ({
+      this.prisma.article.count({ where: { like: { some: { userId } } } }),
+    ]);
+
+    const articleResult = articles.map((article) => ({
       ...article,
       tags: article.articleTagRelations.map((r) => r.tag.name),
       liked: article.like.length > 0,
       articleTagRelations: undefined,
       like: undefined,
     }));
+
+    return getPaginationResult(articleResult, totalCount, _take);
   }
 
   async createArticle(userId: number, payload: CreateArticleDto) {
