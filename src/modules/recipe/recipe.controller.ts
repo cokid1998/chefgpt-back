@@ -60,10 +60,14 @@ export class RecipeController {
   @ApiOperation({
     summary: "내 레시피 목록",
   })
-  async getMyRecipe(@CurrentUser() user: JWTUser) {
+  async getMyRecipe(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
 
-    return this.recipeService.getMyRecipe(userId);
+    return this.recipeService.getMyRecipe(userId, Number(page), Number(take));
   }
 
   @Get("liked")
@@ -72,9 +76,17 @@ export class RecipeController {
   @ApiOperation({
     summary: "좋아요 누른 레시피 리스트",
   })
-  async getLikedRecipe(@CurrentUser() user: JWTUser) {
+  async getLikedRecipe(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
-    return this.recipeService.getLikedRecipe(userId);
+    return this.recipeService.getLikedRecipe(
+      userId,
+      Number(page),
+      Number(take),
+    );
   }
 
   @Get("category")

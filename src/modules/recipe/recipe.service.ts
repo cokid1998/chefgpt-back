@@ -284,65 +284,92 @@ export class RecipeService {
     return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
   }
 
-  async getMyRecipe(userId: number) {
-    const recipes = await this.prisma.recipe.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        id: true,
-        category: true,
-        cookingTime: true,
-        description: true,
-        title: true,
-        viewCount: true,
-        thumbnailUrl: true,
-        recipeSteps: true,
-        recipeIngredients: true,
-        recipeSource: true,
-        youtubeVideoId: true,
-        likeCount: true,
+  async getMyRecipe(userId: number, page: number, take: number = 9) {
+    const { skip, take: _take } = getPaginationParams(page, take);
 
-        like: userId ? { where: { userId } } : false,
-      },
-      orderBy: { id: "desc" },
-    });
+    const [recipes, totalCount] = await Promise.all([
+      this.prisma.recipe.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          category: true,
+          cookingTime: true,
+          description: true,
+          title: true,
+          viewCount: true,
+          thumbnailUrl: true,
+          recipeSteps: true,
+          recipeIngredients: true,
+          recipeSource: true,
+          youtubeVideoId: true,
+          likeCount: true,
+          like: userId ? { where: { userId } } : false,
+        },
+        orderBy: { id: "desc" },
+        take: _take,
+        skip,
+      }),
 
-    return recipes.map((recipe) => ({
-      ...recipe,
-      liked: recipe.like.length > 0,
-    }));
+      this.prisma.recipe.count({ where: { userId } }),
+    ]);
+
+    return getPaginationResult(
+      recipes.map((recipe) => ({
+        ...recipe,
+        liked: recipe.like.length > 0,
+      })),
+      totalCount,
+      _take,
+    );
   }
 
-  async getLikedRecipe(userId: number) {
-    const recipes = await this.prisma.recipe.findMany({
-      where: {
-        like: {
-          some: { userId }, // 내가 좋아요한 레시피 필터
-        },
-      },
-      select: {
-        id: true,
-        category: true,
-        cookingTime: true,
-        description: true,
-        title: true,
-        viewCount: true,
-        thumbnailUrl: true,
-        recipeSteps: true,
-        recipeIngredients: true,
-        recipeSource: true,
-        youtubeVideoId: true,
-        likeCount: true,
-        like: { where: { userId } },
-      },
-      orderBy: { id: "desc" },
-    });
+  async getLikedRecipe(userId: number, page: number, take: number = 9) {
+    const { skip, take: _take } = getPaginationParams(page, take);
 
-    return recipes.map((recipe) => ({
-      ...recipe,
-      liked: recipe.like.length > 0, // 항상 true지만 일관성 유지
-    }));
+    const [recipes, totalCount] = await Promise.all([
+      this.prisma.recipe.findMany({
+        where: {
+          like: {
+            some: { userId }, // 내가 좋아요한 레시피 필터
+          },
+        },
+        select: {
+          id: true,
+          category: true,
+          cookingTime: true,
+          description: true,
+          title: true,
+          viewCount: true,
+          thumbnailUrl: true,
+          recipeSteps: true,
+          recipeIngredients: true,
+          recipeSource: true,
+          youtubeVideoId: true,
+          likeCount: true,
+          like: { where: { userId } },
+        },
+        orderBy: { id: "desc" },
+        take: _take,
+        skip,
+      }),
+
+      this.prisma.recipe.count({
+        where: {
+          like: {
+            some: { userId },
+          },
+        },
+      }),
+    ]);
+
+    return getPaginationResult(
+      recipes.map((recipe) => ({
+        ...recipe,
+        liked: recipe.like.length > 0, // 항상 true지만 일관성 유지
+      })),
+      totalCount,
+      _take,
+    );
   }
 
   async getRecipeCategory() {
