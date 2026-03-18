@@ -7,6 +7,10 @@ import {
 } from "src/modules/vote/dto/vote.dto";
 import { parseUtcDate } from "src/common/util/date";
 import { Option_Name } from "prisma/generated/enums";
+import {
+  getPaginationParams,
+  getPaginationResult,
+} from "src/common/util/pagination";
 
 @Injectable()
 export class VoteService {
@@ -156,13 +160,21 @@ export class VoteService {
     return result;
   }
 
-  async getMyVote(userId: number) {
-    const votes = await this.prisma.vote.findMany({
-      where: { userId },
-      orderBy: {
-        startDate: "desc",
-      },
-    });
+  async getMyVote(userId: number, page: number, take: number = 5) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
+    const [votes, totalCount] = await Promise.all([
+      this.prisma.vote.findMany({
+        where: { userId },
+        orderBy: {
+          startDate: "desc",
+        },
+        take: _take,
+        skip,
+      }),
+
+      this.prisma.vote.count({ where: { userId } }),
+    ]);
 
     // 각 투표별로 A/B 집계
     const results = await Promise.all(
@@ -195,29 +207,39 @@ export class VoteService {
       }),
     );
 
-    return results;
+    // await new Promise((resolve) => setTimeout(resolve, 50000));
+
+    return getPaginationResult(results, totalCount, _take);
   }
 
-  async getMyVoted(userId: number) {
-    const votes = await this.prisma.vote_User.findMany({
-      where: { userId },
-      include: {
-        vote: {
-          include: {
-            _count: {
-              select: { voteUsers: true },
+  async getMyVoted(userId: number, page: number, take: number = 5) {
+    const { skip, take: _take } = getPaginationParams(page, take);
+
+    const [votes, totalCount] = await Promise.all([
+      this.prisma.vote_User.findMany({
+        where: { userId },
+        include: {
+          vote: {
+            include: {
+              _count: {
+                select: { voteUsers: true },
+              },
             },
           },
         },
-      },
-      orderBy: {
-        vote: {
-          startDate: "desc",
+        orderBy: {
+          vote: {
+            startDate: "desc",
+          },
         },
-      },
-    });
+        take: _take,
+        skip,
+      }),
 
-    return votes.map((vote) => ({
+      this.prisma.vote_User.count({ where: { userId } }),
+    ]);
+
+    const votesResult = votes.map((vote) => ({
       id: vote.vote.id,
       title: vote.vote.title,
       description: vote.vote.description,
@@ -229,5 +251,9 @@ export class VoteService {
       participantsCount: vote.vote._count.voteUsers,
       startDate: vote.vote.startDate,
     }));
+
+    // await new Promise((resolve) => setTimeout(resolve, 50000));
+
+    return getPaginationResult(votesResult, totalCount, _take);
   }
 }

@@ -70,9 +70,13 @@ export class VoteController {
   @ApiOperation({
     summary: "내가 만든 투표",
   })
-  async getMyVote(@CurrentUser() user: JWTUser) {
+  async getMyVote(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
-    return this.voteService.getMyVote(userId);
+    return this.voteService.getMyVote(userId, Number(page), Number(take));
   }
 
   @Get("my-voted")
@@ -81,9 +85,14 @@ export class VoteController {
   @ApiOperation({
     summary: "내가 참여한 투표",
   })
-  async getMyVoted(@CurrentUser() user: JWTUser) {
+  async getMyVoted(
+    @CurrentUser() user: JWTUser,
+    @Query("page") page?: string,
+    @Query("take") take?: string,
+  ) {
     const { userId, email: _ } = user;
-    return this.voteService.getMyVoted(userId);
+
+    return this.voteService.getMyVoted(userId, Number(page), Number(take));
   }
 
   @Post(":voteId/submit")
