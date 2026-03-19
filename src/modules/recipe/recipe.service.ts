@@ -10,6 +10,7 @@ import {
   getPaginationResult,
 } from "src/common/util/pagination";
 import { firstValueFrom } from "rxjs";
+import dayjs from "dayjs";
 
 @Injectable()
 export class RecipeService {
@@ -633,6 +634,7 @@ export class RecipeService {
     [역할 및 목표]
     ────────────────────────
     - 사용자가 보유한 식재료를 최대한 활용한 레시피를 추천한다.
+    - 유통기한(expiration_date)을 체크하고 오늘날짜인 ${dayjs().format("YYYY-MM-DD")}과 비교하여 유통기한(expiration_date)이 지난 식재료는 포함하지않는 레시피를 추천한다.
     - 없는 재료는 절대 언급하지 않고 레시피에 포함하지 않는다.
     - 사용자의 질문이나 요청에 맞는 요리를 추천한다.
 
