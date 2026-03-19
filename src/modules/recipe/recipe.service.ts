@@ -9,6 +9,7 @@ import {
   getPaginationParams,
   getPaginationResult,
 } from "src/common/util/pagination";
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class RecipeService {
@@ -26,72 +27,72 @@ export class RecipeService {
   async getYoutubeRecipeScript(youtubeUrl: string) {
     const videoId = this.extractVideoId(youtubeUrl);
 
-    // try {
-    //   const res = await firstValueFrom(
-    //     this.httpService.get(
-    //       `https://youtube-transcript-production-d19c.up.railway.app/transcript?id=${videoId}`,
-    //     ),
-    //   );
+    try {
+      const res = await firstValueFrom(
+        this.httpService.get(
+          `${process.env.YOUTUBE_TRANSCRIPT_SERVER}/transcript?id=${videoId}`,
+        ),
+      );
 
-    //   const scriptSummary = this.youtubeScriptSummaryFromOpenAI(
-    //     res.data.full_text,
-    //   );
+      const scriptSummary = await this.youtubeScriptSummaryFromOpenAI(
+        res.data.full_text,
+      );
 
-    //   return scriptSummary;
-    // } catch (error) {
-    //   console.log(error);
-    //   throw new Error("유튜브 자막 추출 에러");
-    // }
+      return scriptSummary;
+    } catch (error) {
+      console.log(error);
+      throw new Error("유튜브 자막 추출 에러");
+    }
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          category: "양식",
-          title: "스파게티 알리오 올리오",
-          description:
-            "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
-          cookingTime: "20분",
-          ingredients: [
-            { name: "스파게티", amount: "200g" },
-            { name: "마늘", amount: "5쪽" },
-            { name: "올리브 오일", amount: "3큰술" },
-            { name: "고추", amount: "1개" },
-            { name: "파슬리", amount: "약간" },
-            { name: "소금", amount: "적당량" },
-            { name: "후추", amount: "적당량" },
-          ],
-          steps: [
-            {
-              stepNumber: 1,
-              stepTitle: "양파 손질",
-              description:
-                "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
-              tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
-            },
-            {
-              stepNumber: 2,
-              stepTitle: "두부 준비",
-              description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
-              tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
-            },
-            {
-              stepNumber: 3,
-              stepTitle: "양념 끓이기",
-              description:
-                "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
-              tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
-            },
-            {
-              stepNumber: 4,
-              stepTitle: "마무리",
-              description:
-                "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
-              tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
-            },
-          ],
-        });
-      }, 500);
-    });
+    // return new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     resolve({
+    //       category: "양식",
+    //       title: "스파게티 알리오 올리오",
+    //       description:
+    //         "이탈리아의 대표적인 파스타 요리로, 마늘과 올리브 오일을 활용한 간단하면서도 풍미 가득한 스파게티입니다. 빠르고 쉽게 만들 수 있어 바쁜 일상에도 적합한 메뉴입니다.",
+    //       cookingTime: "20분",
+    //       ingredients: [
+    //         { name: "스파게티", amount: "200g" },
+    //         { name: "마늘", amount: "5쪽" },
+    //         { name: "올리브 오일", amount: "3큰술" },
+    //         { name: "고추", amount: "1개" },
+    //         { name: "파슬리", amount: "약간" },
+    //         { name: "소금", amount: "적당량" },
+    //         { name: "후추", amount: "적당량" },
+    //       ],
+    //       steps: [
+    //         {
+    //           stepNumber: 1,
+    //           stepTitle: "양파 손질",
+    //           description:
+    //             "양파를 먹기 좋은 크기로 썰어 냄비 바닥에 골고루 깔아주세요.",
+    //           tip: "양파를 먼저 깔아주면 재료가 눌어붙는 것을 방지할 수 있습니다.",
+    //         },
+    //         {
+    //           stepNumber: 2,
+    //           stepTitle: "두부 준비",
+    //           description: "두부를 적당한 크기로 썰어 양파 위에 올려주세요.",
+    //           tip: "두부는 너무 작게 썰면 끓이는 동안 부서질 수 있으니 조심하세요.",
+    //         },
+    //         {
+    //           stepNumber: 3,
+    //           stepTitle: "양념 끓이기",
+    //           description:
+    //             "물 400ml에 고춧가루, 다진 마늘, 진간장, 멸치액젓, 올리고당, 다시다를 넣고 약 5분간 끓여주세요.",
+    //           tip: "끓이는 동안 국물이 넘치지 않도록 불 조절에 주의하세요.",
+    //         },
+    //         {
+    //           stepNumber: 4,
+    //           stepTitle: "마무리",
+    //           description:
+    //             "마지막으로 대파와 청양고추를 넣고 1~2분 정도 더 끓여 완성해 주세요.",
+    //           tip: "청양고추를 넣을 때 매운 향이 올라올 수 있으니 얼굴을 가까이 대지 않도록 조심하세요.",
+    //         },
+    //       ],
+    //     });
+    //   }, 500);
+    // });
   }
 
   async youtubeScriptSummaryFromOpenAI(scriptArray: string) {
@@ -688,67 +689,67 @@ export class RecipeService {
     - 한국어로만 답변한다.
     `;
 
-    // const res = await this.openAI.responses.create({
-    //   model: "gpt-4.1-nano",
-    //   input: prompt,
-    // });
+    const res = await this.openAI.responses.create({
+      model: "gpt-4.1-nano",
+      input: prompt,
+    });
 
-    // return res.output_text;
+    return res.output_text;
 
-    return {
-      message:
-        "보유한 재료들을 활용하여 맛있는 돼지고기 양배추 볶음을 만들어보세요.",
-      recipe: {
-        category: "기타",
-        title: "돼지고기 양배추 볶음",
-        description:
-          "담백하고 맛있는 돼지고기와 신선한 양배추가 어우러진 간단한 볶음 요리입니다. 빠르게 만들어 즐기기에 좋아요.",
-        cookingTime: "20분",
-        ingredients: [
-          {
-            name: "양배추",
-            amount: "1개",
-          },
-          {
-            name: "돼지고기",
-            amount: "500g",
-          },
-          {
-            name: "후추",
-            amount: "적당량",
-          },
-        ],
-        steps: [
-          {
-            stepNumber: 1,
-            stepTitle: "재료 손질",
-            description:
-              "양배추는 먹기 좋은 크기로 채 썰고, 돼지고기는 적당한 크기로 써세요.",
-            tip: "양배추는 너무 얇지 않게 써야 식감이 좋아요.",
-          },
-          {
-            stepNumber: 2,
-            stepTitle: "고기 익히기",
-            description:
-              "팬에 돼지고기를 넣고 중불에서 볶아주세요. 고기가 거의 익을 때까지 기다리면 돼요.",
-            tip: "기름이 적으면 살짝 기름을 더해도 좋아요.",
-          },
-          {
-            stepNumber: 3,
-            stepTitle: "양배추 넣기",
-            description:
-              "고기가 익으면 양배추를 넣고 함께 볶아주세요. 양배추가 숨이 죽을 때까지 볶으시면 돼요.",
-            tip: "너무 오래 볶지 말고 아삭한 식감을 유지하세요.",
-          },
-          {
-            stepNumber: 4,
-            stepTitle: "간 맞추기",
-            description:
-              "후추를 적당히 뿌려 간을 맞추고, 필요시 소금이나 간장을 조금 더 넣어주세요.",
-            tip: "취향에 따라 간장을 넣어도 맛이 좋아요.",
-          },
-        ],
-      },
-    };
+    // return {
+    //   message:
+    //     "보유한 재료들을 활용하여 맛있는 돼지고기 양배추 볶음을 만들어보세요.",
+    //   recipe: {
+    //     category: "기타",
+    //     title: "돼지고기 양배추 볶음",
+    //     description:
+    //       "담백하고 맛있는 돼지고기와 신선한 양배추가 어우러진 간단한 볶음 요리입니다. 빠르게 만들어 즐기기에 좋아요.",
+    //     cookingTime: "20분",
+    //     ingredients: [
+    //       {
+    //         name: "양배추",
+    //         amount: "1개",
+    //       },
+    //       {
+    //         name: "돼지고기",
+    //         amount: "500g",
+    //       },
+    //       {
+    //         name: "후추",
+    //         amount: "적당량",
+    //       },
+    //     ],
+    //     steps: [
+    //       {
+    //         stepNumber: 1,
+    //         stepTitle: "재료 손질",
+    //         description:
+    //           "양배추는 먹기 좋은 크기로 채 썰고, 돼지고기는 적당한 크기로 써세요.",
+    //         tip: "양배추는 너무 얇지 않게 써야 식감이 좋아요.",
+    //       },
+    //       {
+    //         stepNumber: 2,
+    //         stepTitle: "고기 익히기",
+    //         description:
+    //           "팬에 돼지고기를 넣고 중불에서 볶아주세요. 고기가 거의 익을 때까지 기다리면 돼요.",
+    //         tip: "기름이 적으면 살짝 기름을 더해도 좋아요.",
+    //       },
+    //       {
+    //         stepNumber: 3,
+    //         stepTitle: "양배추 넣기",
+    //         description:
+    //           "고기가 익으면 양배추를 넣고 함께 볶아주세요. 양배추가 숨이 죽을 때까지 볶으시면 돼요.",
+    //         tip: "너무 오래 볶지 말고 아삭한 식감을 유지하세요.",
+    //       },
+    //       {
+    //         stepNumber: 4,
+    //         stepTitle: "간 맞추기",
+    //         description:
+    //           "후추를 적당히 뿌려 간을 맞추고, 필요시 소금이나 간장을 조금 더 넣어주세요.",
+    //         tip: "취향에 따라 간장을 넣어도 맛이 좋아요.",
+    //       },
+    //     ],
+    //   },
+    // };
   }
 }
