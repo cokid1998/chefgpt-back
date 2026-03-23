@@ -1,98 +1,163 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+# 0. Getting Started
 
 ```bash
 $ npm install
+
+$ npm run dev
 ```
 
-## Compile and run the project
+### prisma studio
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ npx prisma studio
 ```
 
-## Run tests
+### Architecture
 
-```bash
-# unit tests
-$ npm run test
+<img width="942" height="585" alt="스크린샷 2026-03-22 오후 5 18 02" src="https://github.com/user-attachments/assets/6ebd5d41-17b9-411c-a910-c7d99f10c841" />
 
-# e2e tests
-$ npm run test:e2e
+### [👉 Swagger 링크](https://chefgpt-back.vercel.app/)
 
-# test coverage
-$ npm run test:cov
+<br/>
+<br/>
+
+# 1. Project Overview
+
+### 프로젝트 이름: ChefGPT
+
+ChefGPT는 유튜브 영상 속 레시피를 텍스트 데이터로 변환하여  
+영상에 의존하지 않고도 레시피를 쉽게 확인하고 활용할 수 있도록 만든 플랫폼입니다.
+
+기존의 영상 기반 레시피는 필요한 정보를 빠르게 찾기 어렵다는 문제를 해결하고자 했습니다.
+
+또한 단순한 레시피 저장을 넘어,  
+사용자의 냉장고 데이터를 기반으로 한 레시피 추천과  
+요리 투표 및 정보 공유 기능을 통해 커뮤니티 경험까지 제공합니다.
+
+<br/>
+<br/>
+
+# 2. Tech Stack
+
+### Server:
+
+<table>
+  <tr>
+    <td align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/nest_js.png" />
+      <br/>
+      <sub><b>NestJs</b></sub>
+    </td>
+    <td align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/prisma.png" />
+      <br/>
+      <sub><b>Prisma</b></sub>
+    </td>
+    <td align="center">
+      <img width="50" src="https://simpleicons.org/icons/passport.svg" />
+      <br/>
+      <sub><b>PassPort</b></sub>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+### DB & Storage:
+
+<table>
+  <tr>
+    <td align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" />
+      <br/>
+      <sub><b>PostgreSQL</b></sub>
+    </td>
+    <td align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/supabase.png" />
+      <br/>
+      <sub><b>Supabase</b></sub>
+    </td>
+  </tr>
+</table>
+
+<br/>
+<br/>
+<br/>
+
+# 3. Key Features
+
+- ### **🔐 인증**:
+  - 로컬스토리지와, JWT를 통한 인증기능
+  - Passport + Strategy + Guard 조합
+  - `jwt.strategy`: 토큰 검증
+  - `local.strategy`: 로그인 처리
+  - `jwt-auth.guard`: 인증 보호
+  - `decorator`: 현재 사용자 추출
+
+- ### **🎬 유튜브 레시피 데이터 처리**:
+  - 유튜브 자막 데이터 수집 및 정제
+  - 비정형 텍스트를 구조화된 레시피 데이터로 변환
+  - 레시피 저장 및 조회 API 제공
+  - 유튜브자막 전용 서버에 요청 후 로직 처리 ([유튜브서버 깃허브 링크](https://github.com/cokid1998/youtube-transcript))
+
+- ### **✍️ 레시피 관리**:
+  - 레시피 생성, 수정, 삭제 API 제공
+  - 사용자별 레시피 데이터 관리
+
+- ### **🧊 식재료 관리 시스템**:
+  - 사용자 보유 식재료 CRUD API 제공
+  - 사용자별 냉장고 데이터 관리
+
+- ### **🤖 레시피 추천 로직**:
+  - 사용자 식재료 기반 레시피 필터링 및 추천
+  - 조건 기반 데이터 조회 로직 구현
+
+- ### **🗳️ 투표 시스템**:
+  - 투표 생성, 참여, 결과 조회 API 제공
+  - 사용자 참여 기반 데이터 집계 처리
+
+- ### **📚 요리 정보 관리**:
+  - 에디터 기반 콘텐츠 CRUD API 제공
+  - 게시글 조회 및 리스트 API 구현
+
+- ### **👤 사용자 정보 관리**:
+  - 사용자 프로필 및 활동 데이터 조회
+  - 사용자 작성 콘텐츠 통합 조회 API 제공
+
+<br/>
+<br/>
+<br/>
+
+# 4. 📁 Project Structure
+
 ```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+src
+├── assets        # 이미지 및 정적 파일
+├── components    # 도메인별 컴포넌트
+│   ├── article       # 요리정보 컴포넌트
+│   ├── recipe        # 레시피 컴포넌트
+│   ├── refrigerator  # 내 냉장고 컴포넌트
+│   ├── vote          # 투표 기능 컴포넌트
+│   ├── myInfo        # 내 정보 컴포넌트
+│   ├── modal         # 모달 컴포넌트
+│   ├── layout        # 레이아웃 구성
+│   ├── common        # 공통 컴포넌트
+│   └── ui            # Shadcn 컴포넌트
+│
+├── hooks
+│   ├── API           # API 요청 로직 (React Query 기반)
+│   │   ├── GET / POST / PATCH / DELETE 단위로 분리
+│   │   └── 도메인별 (article, recipe, vote 등) 구성
+│   └── custom hooks  # 공통 훅 (스크롤, 모바일 감지 등)
+│
+├── constants         # API URL, Query Key 등 상수 관리
+├── store             # 전역 상태 관리 (인증, 모달)
+├── provider          # 모달 Provider
+├── types             # 프로젝트에서 사용하는 타입
+├── page              # 라우팅되는 페이지
+├── lib               # Shadcn 컴포넌트에서 사용하는 유틸함수
+│
+├── App.tsx
+├── route.tsx         # 라우팅 설정
+└── main.tsx          # 엔트리 포인트
 ```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
