@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import OpenAI from "openai";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRecipeDto } from "src/modules/recipe/dto/recipe.dto";
@@ -41,6 +41,16 @@ export class RecipeService {
 
       return scriptSummary;
     } catch (error) {
+      if (error.response?.status === 404) {
+        throw new HttpException(
+          {
+            code: "NO_CAPTION",
+            message: "자막이 없는 영상입니다.",
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
       console.log(error);
       throw new Error("유튜브 자막 추출 에러");
     }
