@@ -18,6 +18,8 @@ import { AuthUser } from "src/modules/auth/strategy/local.strategy";
 import { KakaoService } from "src/modules/auth/kakao/kakao.service";
 import { Request as RequestType } from "express";
 
+const isProd = process.env.NODE_ENV === "production";
+
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -57,8 +59,8 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // 개발환경: false, 배포: true
-      sameSite: "lax",
+      secure: isProd, // 개발환경: false, 배포: true
+      sameSite: isProd ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -98,8 +100,8 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // 개발환경: false, 배포: true
-      sameSite: "lax",
+      secure: isProd, // 개발환경: false, 배포: true
+      sameSite: isProd ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -117,8 +119,8 @@ export class AuthController {
   logOut(@Res() res: Response) {
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false, // 개발환경: false, 배포: true
-      sameSite: "lax",
+      secure: isProd, // 개발환경: false, 배포: true
+      sameSite: isProd ? "none" : "lax",
       path: "/",
     });
 
@@ -135,8 +137,8 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // 개발환경: false, 배포: true
-      sameSite: "lax",
+      secure: isProd, // 개발환경: false, 배포: true
+      sameSite: isProd ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
