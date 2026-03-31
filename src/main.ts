@@ -49,12 +49,12 @@ async function bootstrap() {
     next();
   });
 
+  app.use(cookieParser());
   app.enableCors({
     origin: ["http://localhost:5173", "https://chefgpt-front.vercel.app"],
     credentials: true,
   });
 
-  app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
