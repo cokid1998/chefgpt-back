@@ -11,6 +11,8 @@ import {
 } from "src/common/util/pagination";
 import { firstValueFrom } from "rxjs";
 import dayjs from "dayjs";
+import { ERROR } from "src/common/constants/error";
+import { AxiosError } from "axios";
 
 @Injectable()
 export class RecipeService {
@@ -41,17 +43,19 @@ export class RecipeService {
 
       return scriptSummary;
     } catch (error) {
-      if (error.response?.status === 404) {
-        throw new HttpException(
-          {
-            code: "NO_CAPTION",
-            message: "자막이 없는 영상입니다.",
-          },
-          HttpStatus.NOT_FOUND,
-        );
+      if (error instanceof HttpException) {
+        // 레시피 관련 유튜브가 아닐 때 에러처리
+        throw error;
       }
 
-      console.log(error);
+      if (error instanceof AxiosError) {
+        // 영상에 자막이 없을 때 에러처리
+        if (error.response?.status === 404) {
+          throw new HttpException(ERROR.NO_CAPTION, HttpStatus.NOT_FOUND);
+        }
+      }
+
+      // 그 외 에러처리
       throw new Error("유튜브 자막 추출 에러");
     }
   }
@@ -70,6 +74,7 @@ export class RecipeService {
 
       [출력 JSON 구조]
       {
+        "isRecipe": boolean,
         "category": string,
         "title": string,
         "description": string,
@@ -215,6 +220,9 @@ export class RecipeService {
       - 반드시 하나의 JSON 객체만 출력해 주세요.
       - JSON 외의 어떤 문자도 출력하지 마세요.
       - 마크다운, 설명, 주석은 출력하지 마세요.
+      - 입력된 자막이 요리와 관련된 영상이면 isRecipe를 true로,
+        요리와 무관한 영상이면 isRecipe를 false로 설정하고
+        나머지 필드는 모두 null로 반환해 주세요.
 
       [자막 데이터]
       ${JSON.stringify(scriptArray, null, 2)}
@@ -225,7 +233,15 @@ export class RecipeService {
       input: prompt,
     });
 
-    return JSON.parse(res.output_text);
+    const result = JSON.parse(res.output_text);
+
+    console.log(result.isRecipe);
+
+    if (!result.isRecipe) {
+      throw new HttpException(ERROR.NOT_RECIPE, HttpStatus.BAD_REQUEST);
+    }
+
+    return result;
   }
 
   private extractVideoId(url: string) {
